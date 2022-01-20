@@ -3,10 +3,10 @@ package zio.mock.examples
 import zio.mock.Expectation.{unit, value, valueF}
 import zio.mock.{MockClock, MockConsole, MockRandom}
 import zio.test.Assertion._
-import zio.test.{assertM, ZIOSpecDefault}
+import zio.test.{Spec, TestFailure, TestSuccess, ZIOSpecDefault, assertM}
 import zio.{Clock, Console, Random, ZIO}
+
 import java.io.IOException
-import zio.test.{Spec, TestFailure, TestSuccess}
 
 object MockExampleSpec extends ZIOSpecDefault {
 
@@ -43,11 +43,11 @@ object MockExampleSpec extends ZIOSpecDefault {
       def composedBranchingProgram(p1: Boolean, p2: Boolean) =
         branchingProgram(p1) <*> branchingProgram(p2)
 
-      val clockLayer = (MockClock.NanoTime(value(42L)) andThen MockClock.NanoTime(value(42L))).toLayer
+      val clockLayer      = (MockClock.NanoTime(value(42L)) andThen MockClock.NanoTime(value(42L))).toLayer
       val noCallToConsole = composedBranchingProgram(false, false)
         .provide(MockConsole.empty ++ clockLayer)
 
-      val consoleLayer =
+      val consoleLayer  =
         (MockConsole.ReadLine(value("foo")) andThen MockConsole.ReadLine(value("foo"))).toLayer
       val noCallToClock = composedBranchingProgram(true, true)
         .provide(MockClock.empty ++ consoleLayer)

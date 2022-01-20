@@ -4,11 +4,10 @@ import zio.mock.Expectation.{unit, value, valueF}
 import zio.mock.{MockClock, MockConsole, MockRandom}
 import zio.test.Assertion._
 import zio.test.junit.JUnitRunnableSpec
-import zio.test.assertM
-import zio.{Console, Random, Clock}
+import zio.test.{Spec, TestFailure, TestSuccess, assertM}
+import zio.{Clock, Console, Random}
 
 import java.io.IOException
-import zio.test.{Spec, TestFailure, TestSuccess}
 
 class MockExampleSpecWithJUnit extends JUnitRunnableSpec {
 
