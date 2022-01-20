@@ -143,6 +143,7 @@ lazy val examplesJVM = examples.jvm.settings(dottySettings)
 lazy val docs = project
   .in(file("zio-mock-docs"))
   .settings(stdSettings("zio-mock"))
+  .settings(macroExpansionSettings)
   .settings(
     scalaVersion                               := Scala213,
     publish / skip                             := true,
