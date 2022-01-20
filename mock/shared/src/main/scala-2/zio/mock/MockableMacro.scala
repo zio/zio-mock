@@ -21,9 +21,8 @@ import zio.test.TestVersion
 
 import scala.reflect.macros.whitebox.Context
 
-/**
- * Generates method tags for a service into annotated object.
- */
+/** Generates method tags for a service into annotated object.
+  */
 private[mock] object MockableMacro {
 
   @silent
@@ -84,11 +83,11 @@ private[mock] object MockableMacro {
     }
 
     case class MethodInfo(
-      symbol: MethodSymbol,
-      capability: Capability,
-      params: List[Symbol],
-      typeParams: List[TypeSymbol],
-      i: Type
+        symbol: MethodSymbol,
+        capability: Capability,
+        params: List[Symbol],
+        typeParams: List[TypeSymbol],
+        i: Type
     ) {
 
       val r: Type = capability match {
@@ -120,7 +119,7 @@ private[mock] object MockableMacro {
     object MethodInfo {
 
       def apply(symbol: MethodSymbol): MethodInfo = {
-        val name = symbol.name
+        val name   = symbol.name
         val params =
           symbol.paramLists.flatten
             .filterNot(isTagged)
@@ -140,7 +139,7 @@ private[mock] object MockableMacro {
 
         def substituteServiceTypeParam(t: Type) = serviceTypeParameterSubstitutions.getOrElse(t.typeSymbol.asType, t)
 
-        val dealiased = symbol.returnType.dealias
+        val dealiased  = symbol.returnType.dealias
         val capability =
           (dealiased.typeArgs.map(substituteServiceTypeParam(_)), dealiased.typeSymbol.fullName) match {
             case (r :: e :: a :: Nil, "zio.ZIO")                     => Capability.Effect(r, e, a)
@@ -164,35 +163,35 @@ private[mock] object MockableMacro {
           q"case object $tagName extends Stream[$i, $e, $a]"
         case (_: Capability.Method, false, false, false) =>
           q"case object $tagName extends Method[$i, $e, $a]"
-        case (_: Capability.Method, true, false, false) =>
+        case (_: Capability.Method, true, false, false)  =>
           q"case object $tagName extends Poly.Method.Input[$e, $a]"
-        case (_: Capability.Method, false, true, false) =>
+        case (_: Capability.Method, false, true, false)  =>
           q"case object $tagName extends Poly.Method.Error[$i, $a]"
-        case (_: Capability.Method, false, false, true) =>
+        case (_: Capability.Method, false, false, true)  =>
           q"case object $tagName extends Poly.Method.Output[$i, $e]"
-        case (_: Capability.Method, true, true, false) =>
+        case (_: Capability.Method, true, true, false)   =>
           q"case object $tagName extends Poly.Method.InputError[$a]"
-        case (_: Capability.Method, true, false, true) =>
+        case (_: Capability.Method, true, false, true)   =>
           q"case object $tagName extends Poly.Method.InputOutput[$e]"
-        case (_: Capability.Method, false, true, true) =>
+        case (_: Capability.Method, false, true, true)   =>
           q"case object $tagName extends Poly.Method.ErrorOutput[$i]"
-        case (_: Capability.Method, true, true, true) =>
+        case (_: Capability.Method, true, true, true)    =>
           q"case object $tagName extends Poly.Method.InputErrorOutput"
         case (_: Capability.Effect, false, false, false) =>
           q"case object $tagName extends Effect[$i, $e, $a]"
-        case (_: Capability.Effect, true, false, false) =>
+        case (_: Capability.Effect, true, false, false)  =>
           q"case object $tagName extends Poly.Effect.Input[$e, $a]"
-        case (_: Capability.Effect, false, true, false) =>
+        case (_: Capability.Effect, false, true, false)  =>
           q"case object $tagName extends Poly.Effect.Error[$i, $a]"
-        case (_: Capability.Effect, false, false, true) =>
+        case (_: Capability.Effect, false, false, true)  =>
           q"case object $tagName extends Poly.Effect.Output[$i, $e]"
-        case (_: Capability.Effect, true, true, false) =>
+        case (_: Capability.Effect, true, true, false)   =>
           q"case object $tagName extends Poly.Effect.InputError[$a]"
-        case (_: Capability.Effect, true, false, true) =>
+        case (_: Capability.Effect, true, false, true)   =>
           q"case object $tagName extends Poly.Effect.InputOutput[$e]"
-        case (_: Capability.Effect, false, true, true) =>
+        case (_: Capability.Effect, false, true, true)   =>
           q"case object $tagName extends Poly.Effect.ErrorOutput[$i]"
-        case (_: Capability.Effect, true, true, true) =>
+        case (_: Capability.Effect, true, true, true)    =>
           q"case object $tagName extends Poly.Effect.InputErrorOutput"
       }
     }
@@ -202,7 +201,7 @@ private[mock] object MockableMacro {
       val (r, i, e, a) = (info.r, info.i, info.e, info.a)
 
       val typeParamArgs = info.symbol.typeParams.map(s => toTypeDef(s))
-      val tag = (info.polyI, info.polyE, info.polyA, overloadIndex) match {
+      val tag           = (info.polyI, info.polyE, info.polyA, overloadIndex) match {
         case (false, false, false, None)        => q"$mockName.$tagName"
         case (true, false, false, None)         => q"$mockName.$tagName.of[$i]"
         case (false, true, false, None)         => q"$mockName.$tagName.of[$e]"
@@ -225,7 +224,7 @@ private[mock] object MockableMacro {
         if (info.symbol.isAbstract) Modifiers(Flag.FINAL)
         else Modifiers(Flag.FINAL | Flag.OVERRIDE)
 
-      val returnType = info.capability match {
+      val returnType  = info.capability match {
         case Capability.Method(t)       => tq"$t"
         case Capability.Stream(r, e, a) => tq"_root_.zio.stream.ZStream[$r, $e, $a]"
         case _                          => tq"_root_.zio.ZIO[$r, $e, $a]"
@@ -236,9 +235,9 @@ private[mock] object MockableMacro {
           case (_: Capability.Effect, paramNames) => q"proxy($tag, ..$paramNames)"
           case (_: Capability.Method, Nil)        => q"rts.unsafeRunTask(proxy($tag))"
           case (_: Capability.Method, paramNames) => q"rts.unsafeRunTask(proxy($tag, ..$paramNames))"
-          case (_: Capability.Sink, Nil) =>
+          case (_: Capability.Sink, Nil)          =>
             q"rts.unsafeRun(proxy($tag).catchAll(error => _root_.zio.UIO(_root_.zio.stream.ZSink.fail(error))))"
-          case (_: Capability.Sink, paramNames) =>
+          case (_: Capability.Sink, paramNames)   =>
             q"rts.unsafeRun(proxy($tag, ..$paramNames).catchAll(error => _root_.zio.UIO(_root_.zio.stream.ZSink.fail(error))))"
           case (_: Capability.Stream, Nil)        => q"rts.unsafeRun(proxy($tag))"
           case (_: Capability.Stream, paramNames) => q"rts.unsafeRun(proxy($tag, ..$paramNames))"
@@ -257,7 +256,7 @@ private[mock] object MockableMacro {
         }) match {
           case Nil       => q"$mods def $name[..$typeParamArgs]: $returnType = $returnValue"
           case List(Nil) => q"$mods def $name[..$typeParamArgs](): $returnType = $returnValue"
-          case params =>
+          case params    =>
             q"$mods def $name[..$typeParamArgs](...$params): $returnType = $returnValue"
         }
       }
@@ -280,8 +279,8 @@ private[mock] object MockableMacro {
       methods.collect {
         case (name, info :: Nil) =>
           makeTag(name.toTermName, info)
-        case (name, infos) =>
-          val tagName = capitalize(name.toTermName)
+        case (name, infos)       =>
+          val tagName        = capitalize(name.toTermName)
           val overloadedTags = sortOverloads(infos).zipWithIndex.map { case (info, idx) =>
             val idxName = TermName(s"_$idx")
             makeTag(idxName, info)
@@ -291,15 +290,18 @@ private[mock] object MockableMacro {
       }
 
     val mocks =
-      methods.collect {
-        case (name, info :: Nil) =>
-          List(makeMock(name.toTermName, info, None))
-        case (name, infos) =>
-          sortOverloads(infos).zipWithIndex.map { case (info, idx) =>
-            val idxName = TermName(s"_$idx")
-            makeMock(name.toTermName, info, Some(idxName))
-          }
-      }.toList.flatten
+      methods
+        .collect {
+          case (name, info :: Nil) =>
+            List(makeMock(name.toTermName, info, None))
+          case (name, infos)       =>
+            sortOverloads(infos).zipWithIndex.map { case (info, idx) =>
+              val idxName = TermName(s"_$idx")
+              makeMock(name.toTermName, info, Some(idxName))
+            }
+        }
+        .toList
+        .flatten
 
     val serviceClassName = TypeName(c.freshName())
 
