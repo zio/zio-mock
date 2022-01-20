@@ -112,7 +112,8 @@ lazy val mockTests = crossProject(JSPlatform, JVMPlatform)
     resolvers +=
       "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
     libraryDependencies ++= Seq(
-      "dev.zio" %% "zio-test-sbt" % zioVersion % Test
+      "dev.zio" %%% "zio-test"     % zioVersion % Test,
+      "dev.zio" %%% "zio-test-sbt" % zioVersion % Test
     )
   )
   .settings(stdSettings("mock-tests"))
