@@ -72,6 +72,7 @@ lazy val mock = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .settings(crossProjectSettings)
   .settings(macroDefinitionSettings)
   .settings(macroExpansionSettings)
+  .settings(buildInfoSettings("zio.mock"))
   .settings(
     libraryDependencies ++= Seq(
       ("org.portable-scala" %%% "portable-scala-reflect" % "1.1.1")
@@ -86,6 +87,7 @@ lazy val mock = crossProject(JSPlatform, JVMPlatform, NativePlatform)
         Seq("-P:silencer:globalFilters=[zio.stacktracer.TracingImplicits.disableAutoTrace]")
     }
   )
+  .enablePlugins(BuildInfoPlugin)
 
 lazy val mockJVM    = mock.jvm
   .settings(dottySettings)
@@ -117,10 +119,8 @@ lazy val mockTests = crossProject(JSPlatform, JVMPlatform)
   .settings(crossProjectSettings)
   .settings(semanticdbEnabled := false) // NOTE: disabled because it failed on MockableSpec.scala
   .settings(testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"))
-  .settings(buildInfoSettings("zio.mock"))
   .settings(publish / skip := true)
   .settings(macroExpansionSettings)
-  .enablePlugins(BuildInfoPlugin)
 
 lazy val mockTestsJVM = mockTests.jvm.settings(dottySettings)
 lazy val mockTestsJS  = mockTests.js.settings(dottySettings)
@@ -143,6 +143,8 @@ lazy val examplesJVM = examples.jvm.settings(dottySettings)
 lazy val docs = project
   .in(file("zio-mock-docs"))
   .settings(stdSettings("zio-mock"))
+  .settings(macroDefinitionSettings)
+  .settings(macroExpansionSettings)
   .settings(
     scalaVersion                               := Scala213,
     publish / skip                             := true,
