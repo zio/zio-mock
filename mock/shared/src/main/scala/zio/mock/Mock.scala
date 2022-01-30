@@ -19,11 +19,11 @@ package zio.mock
 import zio.stacktracer.TracingImplicits.disableAutoTrace
 import zio.stream.{ZSink, ZStream}
 import zio.test.TestPlatform
-import zio.{Executor, Runtime, Tag, ULayer, URIO, URLayer, ZIO, ZTraceElement}
+import zio.{EnvironmentTag, Executor, Runtime, Tag, ULayer, URIO, URLayer, ZIO, ZTraceElement}
 
 /** A `Mock[R]` represents a mockable environment `R`.
   */
-abstract class Mock[R: Tag] { self =>
+abstract class Mock[R: EnvironmentTag] { self =>
 
   protected[mock] val compose: URLayer[Proxy, R]
 
@@ -72,5 +72,5 @@ abstract class Mock[R: Tag] { self =>
 
 object Mock {
 
-  private[mock] case class Composed[R: Tag](compose: URLayer[Proxy, R]) extends Mock[R]
+  private[mock] case class Composed[R: EnvironmentTag](compose: URLayer[Proxy, R]) extends Mock[R]
 }

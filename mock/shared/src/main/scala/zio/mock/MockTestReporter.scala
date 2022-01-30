@@ -87,8 +87,8 @@ object MockTestReporter {
             case Left(TestFailure.Assertion(result)) =>
               result
                 .fold[Option[TestResult]] {
-                  case result: AssertionResult.FailureDetailsResult          => Some(BoolAlgebra.success(result))
-                  case AssertionResult.TraceResult(trace, genFailureDetails) =>
+                  case result: AssertionResult.FailureDetailsResult             => Some(BoolAlgebra.success(result))
+                  case AssertionResult.TraceResult(trace, genFailureDetails, _) =>
                     Trace
                       .prune(trace, false)
                       .map(a => BoolAlgebra.success(AssertionResult.TraceResult(a, genFailureDetails)))
@@ -188,7 +188,7 @@ object MockTestReporter {
 
   def renderAssertionResult(assertionResult: AssertionResult, offset: Int): Message =
     assertionResult match {
-      case AssertionResult.TraceResult(trace, genFailureDetails) =>
+      case AssertionResult.TraceResult(trace, genFailureDetails, _) =>
         val failures = FailureCase.fromTrace(trace)
         failures
           .map(fc =>
