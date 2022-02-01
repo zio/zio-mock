@@ -18,7 +18,7 @@ package zio.mock
 
 import zio.stacktracer.TracingImplicits.disableAutoTrace
 import zio.test.Assertion
-import zio.{=!=, EnvironmentTag, IO, LightTypeTag, Tag, taggedIsSubtype, taggedTagType}
+import zio.{=!=, EnvironmentTag, IO, LightTypeTag, taggedIsSubtype, taggedTagType}
 
 import java.util.UUID
 

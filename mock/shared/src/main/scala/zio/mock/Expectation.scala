@@ -21,7 +21,7 @@ import zio.mock.Result.{Fail, Succeed}
 import zio.mock.internal.{ExpectationState, MockException, MockState, ProxyFactory}
 import zio.stacktracer.TracingImplicits.disableAutoTrace
 import zio.test.Assertion
-import zio.{EnvironmentTag, IO, Managed, Tag, ULayer, URLayer, ZLayer, ZTraceElement}
+import zio.{EnvironmentTag, IO, Managed, ULayer, URLayer, ZLayer, ZTraceElement}
 
 import scala.language.implicitConversions
 
