@@ -31,10 +31,10 @@ addCommandAlias(
   "testJVM",
   ";mockTestsJVM/test"
 )
-addCommandAlias(
-  "testJS",
-  ";mockTestsJS/test"
-)
+//addCommandAlias(
+//  "testJS",
+//  ";mockTestsJS/test"
+//)
 addCommandAlias(
   "testNative",
   ";mockNative/compile"
@@ -45,10 +45,10 @@ val zioVersion = "2.0.0-RC2"
 lazy val root = (project in file("."))
   .aggregate(
     mockJVM,
-    mockJS,
+//    mockJS,
     mockNative,
     mockTestsJVM,
-    mockTestsJS,
+//    mockTestsJS,
     examplesJVM,
     docs
   )
@@ -57,15 +57,15 @@ lazy val root = (project in file("."))
     publish / skip     := true
   )
 
-lazy val mock = crossProject(JSPlatform, JVMPlatform, NativePlatform)
+lazy val mock = crossProject(JVMPlatform, NativePlatform)
   .in(file("mock"))
   .settings(
     resolvers +=
       "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
     libraryDependencies ++= Seq(
-      "dev.zio" %% "zio"         % zioVersion,
-      "dev.zio" %% "zio-streams" % zioVersion,
-      "dev.zio" %% "zio-test"    % zioVersion
+      "dev.zio" %%% "zio"         % zioVersion,
+      "dev.zio" %%% "zio-streams" % zioVersion,
+      "dev.zio" %%% "zio-test"    % zioVersion
     )
   )
   .settings(stdSettings("mock-test"))
@@ -73,12 +73,6 @@ lazy val mock = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .settings(macroDefinitionSettings)
   .settings(macroExpansionSettings)
   .settings(buildInfoSettings("zio.mock"))
-  .settings(
-    libraryDependencies ++= Seq(
-      ("org.portable-scala" %%% "portable-scala-reflect" % "1.1.1")
-        .cross(CrossVersion.for3Use2_13)
-    )
-  )
   .settings(
     scalacOptions ++= {
       if (scalaVersion.value == Scala3)
@@ -93,19 +87,20 @@ lazy val mockJVM    = mock.jvm
   .settings(dottySettings)
   // No bincompat on zio-test yet
   .settings(mimaSettings(failOnProblem = false))
-lazy val mockJS     = mock.js
-  .settings(dottySettings)
-  .settings(
-    libraryDependencies ++= List(
-      "io.github.cquiroz" %%% "scala-java-time"      % "2.3.0",
-      "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.3.0"
-    )
-  )
+// lazy val mockJS     = mock.js
+//   .settings(dottySettings)
+//   .settings(scalaJSUseMainModuleInitializer := true)
+//   .settings(
+//     libraryDependencies ++= List(
+//       "io.github.cquiroz" %%% "scala-java-time"      % "2.3.0",
+//       "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.3.0"
+//     )
+//   )
 lazy val mockNative = mock.native
   .settings(nativeSettings)
   .settings(libraryDependencies += "org.ekrich" %%% "sjavatime" % "1.1.5")
 
-lazy val mockTests = crossProject(JSPlatform, JVMPlatform)
+lazy val mockTests = crossProject(JVMPlatform)
   .in(file("mock-tests"))
   .dependsOn(mock)
   .settings(
@@ -123,8 +118,17 @@ lazy val mockTests = crossProject(JSPlatform, JVMPlatform)
   .settings(publish / skip := true)
   .settings(macroExpansionSettings)
 
-lazy val mockTestsJVM = mockTests.jvm.settings(dottySettings)
-lazy val mockTestsJS  = mockTests.js.settings(dottySettings)
+lazy val mockTestsJVM = mockTests.jvm
+  .settings(dottySettings)
+// lazy val mockTestsJS  = mockTests.js
+//   .settings(dottySettings)
+//   .settings(
+//     libraryDependencies ++= List(
+//       "io.github.cquiroz" %%% "scala-java-time"      % "2.3.0",
+//       "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.3.0"
+//     )
+//   )
+//   .settings(scalaJSUseMainModuleInitializer := true)
 
 lazy val examples = crossProject(JVMPlatform)
   .in(file("examples"))
