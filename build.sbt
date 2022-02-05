@@ -69,12 +69,6 @@ lazy val mock = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     )
   )
   .settings(stdSettings("zio-mock"))
-//  .settings(
-//    libraryDependencies ++= Seq(
-//      ("org.portable-scala" %%% "portable-scala-reflect" % "1.1.1")
-//        .cross(CrossVersion.for3Use2_13)
-//    )
-//  )
   .settings(crossProjectSettings)
   .settings(macroDefinitionSettings)
   .settings(macroExpansionSettings)
