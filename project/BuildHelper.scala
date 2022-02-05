@@ -24,7 +24,8 @@ object BuildHelper {
   val Scala213: String                      = versions("2.13")
   val Scala3: String                        = versions("3.1")
 
-  val SilencerVersion = "1.7.8"
+  val SilencerVersion    = "1.7.8"
+  val SjsJavaTimeVersion = "2.3.0"
 
   private val stdOptions = Seq(
     "-deprecation",
@@ -230,8 +231,8 @@ object BuildHelper {
 
   def stdSettings(prjName: String) = Seq(
     name                                   := s"$prjName",
-    crossScalaVersions                     := Seq(Scala212, Scala213),
-    ThisBuild / scalaVersion               := Scala3,
+    crossScalaVersions                     := Seq(Scala212, Scala213, Scala3),
+    ThisBuild / scalaVersion               := Scala213,
     scalacOptions                          := stdOptions ++ extraOptions(scalaVersion.value, optimize = !isSnapshot.value),
     libraryDependencies ++= {
       if (scalaVersion.value == Scala3)
@@ -249,8 +250,8 @@ object BuildHelper {
     semanticdbVersion                      := scalafixSemanticdb.revision,  // use Scalafix compatible version
     ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value),
     ThisBuild / scalafixDependencies ++= List(
-      "com.github.liancheng" %% "organize-imports" % "0.5.0",
-      "com.github.vovapolu"  %% "scaluzzi"         % "0.1.18"
+      "com.github.liancheng" %% "organize-imports" % "0.6.0",
+      "com.github.vovapolu"  %% "scaluzzi"         % "0.1.21"
     ),
     Test / parallelExecution               := true,
     incOptions ~= (_.withLogRecompileOnMacro(false)),
@@ -287,8 +288,8 @@ object BuildHelper {
   )
 
   def jsSettings = Seq(
-    libraryDependencies += "io.github.cquiroz" %%% "scala-java-time"      % "2.2.2",
-    libraryDependencies += "io.github.cquiroz" %%% "scala-java-time-tzdb" % "2.2.2"
+    libraryDependencies += "io.github.cquiroz" %%% "scala-java-time"      % SjsJavaTimeVersion,
+    libraryDependencies += "io.github.cquiroz" %%% "scala-java-time-tzdb" % SjsJavaTimeVersion
   )
 
   def nativeSettings = Seq(
