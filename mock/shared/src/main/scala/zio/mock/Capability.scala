@@ -32,8 +32,12 @@ import java.util.UUID
   * `Method`, `Sink` or `Stream` type members.
   */
 protected[mock] abstract class Capability[R: EnvironmentTag, I: EnvironmentTag, E: EnvironmentTag, A: EnvironmentTag](
-    val mock: Mock[R]
-) extends Capability.Base[R] { self =>
+    _mock: => Mock[R],
+    method: Option[String] = None
+) extends Capability.Base[R](method, taggedTagType(implicitly[EnvironmentTag[I]])) { self =>
+
+  // TODO: separate Capability and Capability.ID. Use Capability.ID in Proxy
+  override def mock: Mock[R] = _mock
 
   val inputTag: LightTypeTag  = taggedTagType(implicitly[EnvironmentTag[I]])
   val errorTag: LightTypeTag  = taggedTagType(implicitly[EnvironmentTag[E]])
@@ -64,10 +68,17 @@ protected[mock] abstract class Capability[R: EnvironmentTag, I: EnvironmentTag, 
 
 object Capability {
 
-  protected abstract class Base[R] {
+  sealed trait Id
 
-    val id: UUID = UUID.randomUUID
-    val mock: Mock[R]
+  case class ObjectId(uuid: UUID)                                                                 extends Id
+  case class MethodDescriptionId(servType: LightTypeTag, methodName: String, input: LightTypeTag) extends Id
+
+  protected abstract class Base[R: EnvironmentTag](method: Option[String], inputTag: LightTypeTag) {
+
+    val id: Id = method.fold[Id](ObjectId(UUID.randomUUID))(m =>
+      MethodDescriptionId(servType = taggedTagType(implicitly[EnvironmentTag[R]]), methodName = m, input = inputTag)
+    )
+    def mock: Mock[R]
 
     /** Render method fully qualified name.
       */
@@ -84,7 +95,8 @@ object Capability {
 
   sealed abstract class Unknown
 
-  protected[mock] abstract class Poly[R: EnvironmentTag, I, E, A] extends Base[R]
+  protected[mock] abstract class Poly[R: EnvironmentTag, I: EnvironmentTag, E, A]
+      extends Base[R](None, taggedTagType(implicitly[EnvironmentTag[I]]))
 
   object Poly {
 
@@ -280,7 +292,7 @@ object Capability {
     private def toMethod[R: EnvironmentTag, I: EnvironmentTag, E: EnvironmentTag, A: EnvironmentTag](
         poly: Poly[R, _, _, _]
     ): Capability[R, I, E, A] = new Capability[R, I, E, A](poly.mock) {
-      override val id: UUID         = poly.id
+      override val id: Id           = poly.id
       override val toString: String = poly.toString
     }
   }
