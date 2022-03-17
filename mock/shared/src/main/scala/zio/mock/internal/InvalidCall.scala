@@ -26,22 +26,22 @@ sealed abstract class InvalidCall
 
 object InvalidCall {
 
-  final case class InvalidArguments[R, I, E, A](
-      invoked: Capability[R, I, E, A],
+  final case class InvalidArguments(
+      invoked: Capability.Signature,
       args: Any,
       assertion: Assertion[Any]
   ) extends InvalidCall
 
-  final case class InvalidCapability[R0, R1, In0, In1, E0, E1, A0, A1](
-      invoked: Capability[R0, In0, E0, A0],
-      expected: Capability[R1, In1, E1, A1],
-      assertion: Assertion[In1]
+  final case class InvalidCapability[R, In, E, A](
+      invoked: Capability.Signature,
+      expected: Capability[R, In, E, A],
+      assertion: Assertion[In]
   ) extends InvalidCall
 
-  final case class InvalidPolyType[R0, R1, In0, In1, E0, E1, A0, A1](
-      invoked: Capability[R0, In0, E0, A0],
+  final case class InvalidPolyType[R, In, E, A](
+      invoked: Capability.Signature,
       args: Any,
-      expected: Capability[R1, In1, E1, A1],
-      assertion: Assertion[In1]
+      expected: Capability[R, In, E, A],
+      assertion: Assertion[In]
   ) extends InvalidCall
 }

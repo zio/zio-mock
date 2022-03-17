@@ -1,10 +1,10 @@
 package zio.mock
 
 import zio._
+import zio.mock.Capability.Signature
 import zio.mock.internal.MockException
 import zio.test.Assertion
 
-import java.io.IOException
 import zio.test.{Spec, TestFailure, TestSuccess}
 
 object EmptyMockSpec extends ZIOBaseSpec with MockSpecUtils[Console] {
@@ -20,14 +20,14 @@ object EmptyMockSpec extends ZIOBaseSpec with MockSpecUtils[Console] {
         isUnit
       ), {
 
-        type M = Capability[Console, Any, IOException, Unit]
-        type X = UnexpectedCallException[Console, Any, IOException, Unit]
+        type M = Signature
+        type X = UnexpectedCallException
 
         testDied("should fail when call happened")(
           MockConsole.empty,
           ZIO.when(true)(Console.printLine("foo")),
           isSubtype[X](
-            hasField[X, M]("capability", _.capability, equalTo(MockConsole.PrintLine)) &&
+            hasField[X, M]("capability", _.capability, equalTo(MockConsole.PrintLine.signature)) &&
               hasField[X, Any]("args", _.args, equalTo("foo"))
           )
         )

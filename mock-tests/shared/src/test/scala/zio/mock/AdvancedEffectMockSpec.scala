@@ -1,6 +1,7 @@
 package zio.mock
 
 import zio.ZIO
+import zio.mock.Capability.Signature
 import zio.mock.internal.{InvalidCall, MockException}
 import zio.mock.module.{PureModule, PureModuleMock}
 import zio.test.{Assertion, Spec, TestFailure, TestSuccess}
@@ -41,13 +42,13 @@ object AdvancedEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule]
   }
 
   def hasUnexpectedCall[I, E, A](capability: Capability[PureModule, I, E, A], args: I): Assertion[Throwable] =
-    isSubtype[UnexpectedCallException[PureModule, I, E, A]](
-      hasField[UnexpectedCallException[PureModule, I, E, A], Capability[PureModule, I, E, A]](
+    isSubtype[UnexpectedCallException](
+      hasField[UnexpectedCallException, Signature](
         "capability",
         _.capability,
-        equalTo(capability)
+        equalTo(capability.signature)
       ) &&
-        hasField[UnexpectedCallException[PureModule, I, E, A], Any]("args", _.args, equalTo(args))
+        hasField[UnexpectedCallException, Any]("args", _.args, equalTo(args))
     )
 
   def hasUnsatisfiedExpectations: Assertion[Throwable] =
@@ -58,9 +59,21 @@ object AdvancedEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule]
       suite("A and B")(
         testValue("A->B passes")(A && B, a *> b, equalTo("B")),
         testValue("B->A passes")(A && B, b *> a, equalTo("A")),
-        testDied("A->A->B fails")(A && B, a *> a *> b, hasFailedMatches(InvalidCapability(cmdA, cmdB, equalTo(2)))),
-        testDied("B->B->A fails")(A && B, b *> b *> a, hasFailedMatches(InvalidCapability(cmdB, cmdA, equalTo(1)))),
-        testDied("A->C->B fails")(A && B, b *> c *> b, hasFailedMatches(InvalidCapability(cmdC, cmdA, equalTo(1))))
+        testDied("A->A->B fails")(
+          A && B,
+          a *> a *> b,
+          hasFailedMatches(InvalidCapability(cmdA.signature, cmdB, equalTo(2)))
+        ),
+        testDied("B->B->A fails")(
+          A && B,
+          b *> b *> a,
+          hasFailedMatches(InvalidCapability(cmdB.signature, cmdA, equalTo(1)))
+        ),
+        testDied("A->C->B fails")(
+          A && B,
+          b *> c *> b,
+          hasFailedMatches(InvalidCapability(cmdC.signature, cmdA, equalTo(1)))
+        )
       ),
       suite("A and B and C")(
         testValue("A->B->C passes")(A && B && C, a *> b *> c, equalTo("C")),
@@ -72,31 +85,35 @@ object AdvancedEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule]
       ),
       suite("A andThen B")(
         testValue("A->B passes")(A ++ B, a *> b, equalTo("B")),
-        testDied("B->A fails")(A ++ B, b *> a, hasFailedMatches(InvalidCapability(cmdB, cmdA, equalTo(1))))
+        testDied("B->A fails")(A ++ B, b *> a, hasFailedMatches(InvalidCapability(cmdB.signature, cmdA, equalTo(1))))
       ),
       suite("A andThen B andThen C")(
         testValue("A->B->C passes")(A ++ B ++ C, a *> b *> c, equalTo("C")),
         testDied("A->C->B fails")(
           A ++ B ++ C,
           a *> c *> b,
-          hasFailedMatches(InvalidCapability(cmdC, cmdB, equalTo(2)))
+          hasFailedMatches(InvalidCapability(cmdC.signature, cmdB, equalTo(2)))
         ),
         testDied("B->A->C fails")(
           A ++ B ++ C,
           b *> a *> c,
-          hasFailedMatches(InvalidCapability(cmdB, cmdA, equalTo(1)))
+          hasFailedMatches(InvalidCapability(cmdB.signature, cmdA, equalTo(1)))
         ),
         testDied("B->C->A fails")(
           A ++ B ++ C,
           b *> c *> a,
-          hasFailedMatches(InvalidCapability(cmdB, cmdA, equalTo(1)))
+          hasFailedMatches(InvalidCapability(cmdB.signature, cmdA, equalTo(1)))
         ),
         testDied("C->A->B fails")(
           A ++ B ++ C,
           c *> a *> b,
-          hasFailedMatches(InvalidCapability(cmdC, cmdA, equalTo(1)))
+          hasFailedMatches(InvalidCapability(cmdC.signature, cmdA, equalTo(1)))
         ),
-        testDied("C->B->A fails")(A ++ B ++ C, c *> b *> a, hasFailedMatches(InvalidCapability(cmdC, cmdA, equalTo(1))))
+        testDied("C->B->A fails")(
+          A ++ B ++ C,
+          c *> b *> a,
+          hasFailedMatches(InvalidCapability(cmdC.signature, cmdA, equalTo(1)))
+        )
       ),
       suite("A or B")(
         testValue("A passes")(A || B, a, equalTo("A")),
@@ -104,7 +121,10 @@ object AdvancedEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule]
         testDied("C fails")(
           A || B,
           c,
-          hasFailedMatches(InvalidCapability(cmdC, cmdB, equalTo(2)), InvalidCapability(cmdC, cmdA, equalTo(1)))
+          hasFailedMatches(
+            InvalidCapability(cmdC.signature, cmdB, equalTo(2)),
+            InvalidCapability(cmdC.signature, cmdA, equalTo(1))
+          )
         )
       ),
       suite("A or B or C")(
@@ -197,7 +217,11 @@ object AdvancedEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule]
           suite("(B atLeast 1) andThen (A atLeast 1)")(
             testDied("0xB/0xA fails")(expectation, ZIO.unit, hasUnsatisfiedExpectations),
             testDied("1xB fails")(expectation, b, hasUnsatisfiedExpectations),
-            testDied("1xA fails")(expectation, a, hasFailedMatches(InvalidCapability(cmdA, cmdB, equalTo(2)))),
+            testDied("1xA fails")(
+              expectation,
+              a,
+              hasFailedMatches(InvalidCapability(cmdA.signature, cmdB, equalTo(2)))
+            ),
             testValue("B->A passes")(expectation, b *> a, equalTo("A")),
             testValue("B->B->A passes")(expectation, b *> b *> a, equalTo("A")),
             testValue("B->A->A passes")(expectation, b *> a *> a, equalTo("A"))

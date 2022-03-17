@@ -1,6 +1,7 @@
 package zio.mock
 
 import zio._
+import zio.mock.Capability.Signature
 import zio.mock.internal.{ExpectationState, InvalidCall, MockException}
 import zio.mock.module.{PureModule, PureModuleMock}
 import zio.test.{Assertion, Live, Spec, TestFailure, TestSuccess}
@@ -415,14 +416,18 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
       testDied("invalid arguments")(
         PureModuleMock.ParameterizedCommand(equalTo(1)),
         PureModule.parameterizedCommand(2),
-        equalTo(InvalidCallException(List(InvalidArguments(PureModuleMock.ParameterizedCommand, 2, equalTo(1)))))
+        equalTo(
+          InvalidCallException(List(InvalidArguments(PureModuleMock.ParameterizedCommand.signature, 2, equalTo(1))))
+        )
       ),
       testDied("invalid method")(
         PureModuleMock.ParameterizedCommand(equalTo(1)),
         PureModule.singleParam(1),
         equalTo(
           InvalidCallException(
-            List(InvalidCapability(PureModuleMock.SingleParam, PureModuleMock.ParameterizedCommand, equalTo(1)))
+            List(
+              InvalidCapability(PureModuleMock.SingleParam.signature, PureModuleMock.ParameterizedCommand, equalTo(1))
+            )
           )
         )
       ), {
@@ -465,14 +470,14 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           )
         )
       }, {
-        type M = Capability[PureModule, (Int, String, Long), String, String]
-        type X = UnexpectedCallException[PureModule, (Int, String, Long), String, String]
+        type M = Signature
+        type X = UnexpectedCallException
 
         testDied("unexpected call")(
           PureModuleMock.SingleParam(equalTo(1), value("foo")),
           PureModule.singleParam(1) *> PureModule.manyParams(2, "3", 4L),
           isSubtype[X](
-            hasField[X, M]("capability", _.capability, equalTo(PureModuleMock.ManyParams)) &&
+            hasField[X, M]("capability", _.capability, equalTo(PureModuleMock.ManyParams.signature)) &&
               hasField[X, Any]("args", _.args, equalTo((2, "3", 4L)))
           )
         )
