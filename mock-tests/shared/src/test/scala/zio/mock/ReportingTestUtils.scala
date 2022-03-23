@@ -4,10 +4,10 @@ import zio.mock.Expectation._
 import zio.mock.internal.InvalidCall._
 import zio.mock.internal.MockException._
 import zio.mock.module.{PureModule, PureModuleMock}
-import zio.test.Assertion.{equalTo, isGreaterThan, isLessThan, isRight, isSome, not}
+import zio.test.Assertion._
 import zio.test._
 import zio.test.render.TestRenderer
-import zio.{Cause, Layer, Promise, ZIO, ZTraceElement}
+import zio.{Cause, Promise, Scope, ZIO, ZLayer, ZTraceElement}
 
 import scala.{Console => SConsole}
 
@@ -49,11 +49,11 @@ object ReportingTestUtils {
 
   def runLog(
       spec: ZSpec[TestEnvironment, String]
-  )(implicit trace: ZTraceElement): ZIO[TestEnvironment, Nothing, String] =
+  )(implicit trace: ZTraceElement): ZIO[TestEnvironment with Scope, Nothing, String] =
     for {
       _      <- TestTestRunner(testEnvironment)
                   .run(spec)
-                  .provideLayer(
+                  .provideSomeLayer(
                     TestLogger.fromConsole ++ TestClock.default
                   )
       output <- TestConsole.output
@@ -63,13 +63,13 @@ object ReportingTestUtils {
     for {
       results      <- TestTestRunner(testEnvironment)
                         .run(spec)
-                        .provideLayer(
+                        .provideSomeLayer(
                           TestLogger.fromConsole ++ TestClock.default
                         )
       actualSummary = SummaryBuilder.buildSummary(results)
     } yield actualSummary.summary
 
-  private[this] def TestTestRunner(testEnvironment: Layer[Nothing, TestEnvironment])(implicit
+  private[this] def TestTestRunner(testEnvironment: ZLayer[Scope, Nothing, TestEnvironment])(implicit
       trace: ZTraceElement
   ) =
     TestRunner[TestEnvironment, String](

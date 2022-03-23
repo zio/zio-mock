@@ -18,7 +18,7 @@ object StreamModuleMock extends Mock[StreamModule] {
         withRuntime[Proxy].map { rts =>
           new StreamModule {
             def sink(a: Int)   =
-              rts.unsafeRun(proxy(Sink, a).catchAll(error => UIO(ZSink.fail[String](error).dropLeftover)))
+              rts.unsafeRun(proxy(Sink, a).catchAll(error => UIO.succeed(ZSink.fail[String](error).dropLeftover)))
             def stream(a: Int) = rts.unsafeRun(proxy(Stream, a))
           }
         }
