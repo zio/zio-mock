@@ -195,8 +195,8 @@ object ReportingTestUtils {
   def mock1(implicit trace: ZTraceElement): ZSpec[Any, Nothing] = test("Invalid call") {
     throw InvalidCallException(
       List(
-        InvalidCapability(PureModuleMock.SingleParam, PureModuleMock.ParameterizedCommand, equalTo(1)),
-        InvalidArguments(PureModuleMock.ParameterizedCommand, 2, equalTo(1))
+        InvalidCapability(PureModuleMock.SingleParam.signature, PureModuleMock.ParameterizedCommand, equalTo(1)),
+        InvalidArguments(PureModuleMock.ParameterizedCommand.signature, 2, equalTo(1))
       )
     )
   }
@@ -232,7 +232,7 @@ object ReportingTestUtils {
   )
 
   def mock3(implicit trace: ZTraceElement): ZSpec[Any, Nothing] = test("Extra calls") {
-    throw UnexpectedCallException(PureModuleMock.ManyParams, (2, "3", 4L))
+    throw UnexpectedCallException(PureModuleMock.ManyParams.signature, (2, "3", 4L))
   }
 
   val mock3Expected: Vector[String] = Vector(

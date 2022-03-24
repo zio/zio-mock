@@ -31,15 +31,7 @@ abstract class Mock[R: EnvironmentTag] { self =>
 
   /** Replaces Runtime on JS platform to one with unyielding executor.
     */
-  protected def withRuntime[R](implicit trace: ZTraceElement): URIO[R, Runtime[R]] =
-    ZIO.runtime[R].map { runtime =>
-      if (!TestPlatform.isJS) runtime
-      else
-        runtime.withExecutor {
-          val ec = runtime.runtimeConfig.executor.asExecutionContext
-          Executor.fromExecutionContext(Int.MaxValue)(ec)
-        }
-    }
+  protected def withRuntime[R](implicit trace: ZTraceElement): URIO[R, Runtime[R]] = Mock.withRuntime[R]
 
   abstract class Effect[I: EnvironmentTag, E: EnvironmentTag, A: EnvironmentTag] extends Capability[R, I, E, A](self)
   abstract class Method[I: EnvironmentTag, E <: Throwable: EnvironmentTag, A: EnvironmentTag]
@@ -78,4 +70,19 @@ abstract class Mock[R: EnvironmentTag] { self =>
 object Mock {
 
   private[mock] case class Composed[R: EnvironmentTag](compose: URLayer[Proxy, R]) extends Mock[R]
+
+  class Effect3[R: EnvironmentTag, I: EnvironmentTag, E: EnvironmentTag, A: EnvironmentTag](
+      mock: => Mock[R],
+      method: String
+  ) extends Capability[R, I, E, A](mock, Some(method))
+
+  def withRuntime[R](implicit trace: ZTraceElement): URIO[R, Runtime[R]] =
+    ZIO.runtime[R].map { runtime =>
+      if (!TestPlatform.isJS) runtime
+      else
+        runtime.withExecutor {
+          val ec = runtime.runtimeConfig.executor.asExecutionContext
+          Executor.fromExecutionContext(Int.MaxValue)(ec)
+        }
+    }
 }

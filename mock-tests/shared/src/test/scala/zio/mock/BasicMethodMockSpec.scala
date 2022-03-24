@@ -1,5 +1,6 @@
 package zio.mock
 
+import zio.mock.Capability.Signature
 import zio.mock.internal.{ExpectationState, InvalidCall, MockException}
 import zio.mock.module.{ImpureModule, ImpureModuleMock}
 import zio.test.{Assertion, Spec, TestFailure, TestSuccess}
@@ -416,14 +417,22 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
         testDied("invalid arguments")(
           ImpureModuleMock.ParameterizedCommand(equalTo(1)),
           ImpureModule.parameterizedCommand(2),
-          equalTo(InvalidCallException(List(InvalidArguments(ImpureModuleMock.ParameterizedCommand, 2, equalTo(1)))))
+          equalTo(
+            InvalidCallException(List(InvalidArguments(ImpureModuleMock.ParameterizedCommand.signature, 2, equalTo(1))))
+          )
         ),
         testDied("invalid method")(
           ImpureModuleMock.ParameterizedCommand(equalTo(1)),
           ImpureModule.singleParam(1),
           equalTo(
             InvalidCallException(
-              List(InvalidCapability(ImpureModuleMock.SingleParam, ImpureModuleMock.ParameterizedCommand, equalTo(1)))
+              List(
+                InvalidCapability(
+                  ImpureModuleMock.SingleParam.signature,
+                  ImpureModuleMock.ParameterizedCommand,
+                  equalTo(1)
+                )
+              )
             )
           )
         ), {
@@ -466,14 +475,14 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             )
           )
         }, {
-          type M = Capability[ImpureModule, (Int, String, Long), Throwable, String]
-          type X = UnexpectedCallException[ImpureModule, (Int, String, Long), Throwable, String]
+          type M = Signature
+          type X = UnexpectedCallException
 
           testDied("unexpected call")(
             ImpureModuleMock.SingleParam(equalTo(1), value("foo")),
             ImpureModule.singleParam(1) *> ImpureModule.manyParams(2, "3", 4L),
             isSubtype[X](
-              hasField[X, M]("capability", _.capability, equalTo(ImpureModuleMock.ManyParams)) &&
+              hasField[X, M]("capability", _.capability, equalTo(ImpureModuleMock.ManyParams.signature)) &&
                 hasField[X, Any]("args", _.args, equalTo((2, "3", 4L)))
             )
           )

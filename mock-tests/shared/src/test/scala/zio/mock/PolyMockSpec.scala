@@ -1,5 +1,6 @@
 package zio.mock
 
+import zio.mock.Capability.Signature
 import zio.mock.internal.{InvalidCall, MockException}
 import zio.mock.module.{PureModule, PureModuleMock}
 import zio.test.{Annotations, Assertion, Spec, TestAspect, TestFailure, TestSuccess}
@@ -33,8 +34,8 @@ object PolyMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
       ),
       suite("expectations failed")(
         {
-          type E  = InvalidPolyType[PureModule, PureModule, Long, Int, String, String, String, String]
-          type M1 = Capability[PureModule, Long, String, String]
+          type E  = InvalidPolyType[PureModule, Int, String, String]
+          type M1 = Signature
           type M2 = Capability[PureModule, Int, String, String]
 
           testDied("invalid polymorphic type")(
@@ -76,8 +77,8 @@ object PolyMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
       ),
       suite("expectations failed")(
         {
-          type E  = InvalidPolyType[PureModule, PureModule, String, String, Long, Int, String, String]
-          type M1 = Capability[PureModule, String, Long, String]
+          type E  = InvalidPolyType[PureModule, String, Int, String]
+          type M1 = Signature
           type M2 = Capability[PureModule, String, Int, String]
 
           testDied("invalid polymorphic type")(
@@ -119,8 +120,8 @@ object PolyMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
       ),
       suite("expectations failed")(
         {
-          type E  = InvalidPolyType[PureModule, PureModule, String, String, String, String, Long, Int]
-          type M1 = Capability[PureModule, String, String, Long]
+          type E  = InvalidPolyType[PureModule, String, String, Int]
+          type M1 = Signature
           type M2 = Capability[PureModule, String, String, Int]
 
           testDied("invalid polymorphic type")(
@@ -180,8 +181,8 @@ object PolyMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
       ),
       suite("expectations failed")(
         {
-          type E  = InvalidPolyType[PureModule, PureModule, Long, Int, Int, Long, String, String]
-          type M1 = Capability[PureModule, Long, Int, String]
+          type E  = InvalidPolyType[PureModule, Int, Long, String]
+          type M1 = Signature
           type M2 = Capability[PureModule, Int, Long, String]
 
           testDied("invalid polymorphic type")(
@@ -241,8 +242,8 @@ object PolyMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
       ),
       suite("expectations failed")(
         {
-          type E  = InvalidPolyType[PureModule, PureModule, Long, Int, String, String, Int, Long]
-          type M1 = Capability[PureModule, Long, String, Int]
+          type E  = InvalidPolyType[PureModule, Int, String, Long]
+          type M1 = Signature
           type M2 = Capability[PureModule, Int, String, Long]
 
           testDied("invalid polymorphic type")(
@@ -302,8 +303,8 @@ object PolyMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
       ),
       suite("expectations failed")(
         {
-          type E  = InvalidPolyType[PureModule, PureModule, String, String, Long, Int, Int, Long]
-          type M1 = Capability[PureModule, String, Long, Int]
+          type E  = InvalidPolyType[PureModule, String, Int, Long]
+          type M1 = Signature
           type M2 = Capability[PureModule, String, Int, Long]
 
           testDied("invalid polymorphic type")(
@@ -377,8 +378,8 @@ object PolyMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
       ),
       suite("expectations failed")(
         {
-          type E  = InvalidPolyType[PureModule, PureModule, Int, String, Long, Int, String, Long]
-          type M1 = Capability[PureModule, Int, Long, String]
+          type E  = InvalidPolyType[PureModule, String, Int, Long]
+          type M1 = Signature
           type M2 = Capability[PureModule, String, Int, Long]
 
           testDied("invalid polymorphic type")(
@@ -425,8 +426,8 @@ object PolyMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
       ),
       suite("expectations failed")(
         {
-          type E  = InvalidPolyType[PureModule, PureModule, Unit, Unit, String, String, (Int, String), (Long, String)]
-          type M1 = Capability[PureModule, Unit, String, (Int, String)]
+          type E  = InvalidPolyType[PureModule, Unit, String, (Long, String)]
+          type M1 = Signature
           type M2 = Capability[PureModule, Unit, String, (Long, String)]
           testDied("invalid polymorphic type")(
             PureModuleMock.PolyMixed.of[(Long, String)](value(42L -> "bar")),
@@ -467,8 +468,8 @@ object PolyMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
       ),
       suite("expectations failed")(
         {
-          type E  = InvalidPolyType[PureModule, PureModule, Unit, Unit, String, String, Int, Long]
-          type M1 = Capability[PureModule, Unit, String, Int]
+          type E  = InvalidPolyType[PureModule, Unit, String, Long]
+          type M1 = Signature
           type M2 = Capability[PureModule, Unit, String, Long]
 
           testDied("invalid polymorphic type")(

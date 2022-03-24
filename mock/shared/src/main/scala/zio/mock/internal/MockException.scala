@@ -29,8 +29,8 @@ object MockException {
       expectation: Expectation[R]
   ) extends MockException
 
-  final case class UnexpectedCallException[R, I >: Nothing, E >: Nothing, A >: Nothing](
-      capability: Capability[R, I, E, A],
+  final case class UnexpectedCallException(
+      capability: Capability.Signature,
       args: Any
   ) extends MockException
 

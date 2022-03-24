@@ -16,6 +16,7 @@
 
 package zio.mock
 
+import zio.mock.Capability.Signature
 import zio.stacktracer.TracingImplicits.disableAutoTrace
 import zio.test.Assertion
 import zio.{=!=, EnvironmentTag, IO, LightTypeTag, taggedIsSubtype, taggedTagType}
@@ -32,12 +33,9 @@ import java.util.UUID
   * `Method`, `Sink` or `Stream` type members.
   */
 protected[mock] abstract class Capability[R: EnvironmentTag, I: EnvironmentTag, E: EnvironmentTag, A: EnvironmentTag](
-    val mock: Mock[R]
+    val mock: Mock[R],
+    name: Option[String] = None
 ) extends Capability.Base[R] { self =>
-
-  val inputTag: LightTypeTag  = taggedTagType(implicitly[EnvironmentTag[I]])
-  val errorTag: LightTypeTag  = taggedTagType(implicitly[EnvironmentTag[E]])
-  val outputTag: LightTypeTag = taggedTagType(implicitly[EnvironmentTag[A]])
 
   def apply()(implicit ev1: I =:= Unit, ev2: A <:< Unit): Expectation[R] =
     Expectation.Call[R, I, E, A](
@@ -55,18 +53,60 @@ protected[mock] abstract class Capability[R: EnvironmentTag, I: EnvironmentTag, 
   def apply(returns: Result[I, E, A])(implicit ev: I <:< Unit): Expectation[R] =
     Expectation.Call[R, I, E, A](self, Assertion.isUnit.asInstanceOf[Assertion[I]], returns.io)
 
-  def isEqual[R0, I0, E0, A0](that: Capability[R0, I0, E0, A0]): Boolean =
-    self.id == that.id &&
-      taggedIsSubtype(self.inputTag, that.inputTag) &&
-      taggedIsSubtype(self.errorTag, that.errorTag) &&
-      taggedIsSubtype(self.outputTag, that.outputTag)
+  override val signature: Signature.Simple = Signature.simple[R, I, E, A](name.getOrElse(UUID.randomUUID().toString))
 }
 
 object Capability {
 
-  protected abstract class Base[R] {
+  sealed trait Signature {
+    val servType: LightTypeTag
+    val name: String
 
-    val id: UUID = UUID.randomUUID
+    // TODO: Add tests with service subtypes
+    def isSameMethod(that: Signature): Boolean =
+      this.name == that.name &&
+        taggedIsSubtype(this.servType, that.servType)
+  }
+
+  object Signature {
+    final case class Simple(
+        servType: LightTypeTag,
+        name: String,
+        input: LightTypeTag,
+        error: LightTypeTag,
+        output: LightTypeTag
+    ) extends Signature {
+      // TODO: Add tests with input subtypes
+      def isCompatible(that: Simple): Boolean =
+        this.isSameMethod(that) &&
+          taggedIsSubtype(this.input, that.input) &&
+          taggedIsSubtype(this.error, that.error) &&
+          taggedIsSubtype(this.output, that.output)
+
+    }
+
+    def simple[R: EnvironmentTag, I: EnvironmentTag, E: EnvironmentTag, A: EnvironmentTag](name: String): Simple =
+      Simple(
+        servType = taggedTagType(implicitly[EnvironmentTag[R]]),
+        name = name,
+        input = taggedTagType(implicitly[EnvironmentTag[I]]),
+        error = taggedTagType(implicitly[EnvironmentTag[E]]),
+        output = taggedTagType(implicitly[EnvironmentTag[A]])
+      )
+
+    final case class Poly(servType: LightTypeTag, name: String, input: LightTypeTag) extends Signature
+
+    def poly[R: EnvironmentTag, I: EnvironmentTag](name: String): Poly =
+      Poly(
+        servType = taggedTagType(implicitly[EnvironmentTag[R]]),
+        name = name,
+        input = taggedTagType(implicitly[EnvironmentTag[I]])
+      )
+  }
+
+  protected abstract class Base[R: EnvironmentTag] {
+
+    val signature: Signature
     val mock: Mock[R]
 
     /** Render method fully qualified name.
@@ -84,7 +124,10 @@ object Capability {
 
   sealed abstract class Unknown
 
-  protected[mock] abstract class Poly[R: EnvironmentTag, I, E, A] extends Base[R]
+  protected[mock] abstract class Poly[R: EnvironmentTag, I: EnvironmentTag, E, A](name: Option[String] = None)
+      extends Base[R] {
+    override val signature: Signature.Poly = Signature.poly[R, I](name.getOrElse(UUID.randomUUID().toString))
+  }
 
   object Poly {
 
@@ -280,8 +323,8 @@ object Capability {
     private def toMethod[R: EnvironmentTag, I: EnvironmentTag, E: EnvironmentTag, A: EnvironmentTag](
         poly: Poly[R, _, _, _]
     ): Capability[R, I, E, A] = new Capability[R, I, E, A](poly.mock) {
-      override val id: UUID         = poly.id
-      override val toString: String = poly.toString
+      override val signature: Signature.Simple = Signature.simple[R, I, E, A](poly.signature.name)
+      override val toString: String            = poly.toString
     }
   }
 }

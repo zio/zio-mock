@@ -17,6 +17,7 @@
 package zio.mock
 
 import zio.ZIO
+import zio.mock.Capability.Signature
 import zio.stacktracer.TracingImplicits.disableAutoTrace
 
 /** A `Proxy` provides the machinery to map mocked invocations to predefined results and check some constraints on the
@@ -24,10 +25,15 @@ import zio.stacktracer.TracingImplicits.disableAutoTrace
   */
 abstract class Proxy {
 
-  def invoke[RIn, ROut, Input, Error, Value](
-      capability: Capability[RIn, Input, Error, Value],
+  def invoke[ROut, Input, Error, Value](
+      signature: Signature.Simple,
       input: Input
   ): ZIO[ROut, Error, Value]
+
+  final def invoke[RIn, ROut, Input, Error, Value](
+      capability: Capability[RIn, Input, Error, Value],
+      input: Input
+  ): ZIO[ROut, Error, Value] = invoke(capability.signature, input)
 
   final def apply[RIn, ROut, Error, Value](
       capability: Capability[RIn, Unit, Error, Value]

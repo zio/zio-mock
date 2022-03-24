@@ -36,7 +36,7 @@ object ProxyFactory {
     */
   def mockProxy[R: EnvironmentTag](state: MockState[R])(implicit trace: ZTraceElement): ULayer[Proxy] =
     ZLayer.succeed(new Proxy {
-      def invoke[RIn, ROut, I, E, A](invoked: Capability[RIn, I, E, A], args: I): ZIO[ROut, E, A] = {
+      def invoke[ROut, I, E, A](invoked: Capability.Signature.Simple, args: I): ZIO[ROut, E, A] = {
         sealed trait MatchResult
         object MatchResult {
           case object UnexpectedCall                      extends MatchResult
@@ -63,7 +63,8 @@ object ProxyFactory {
                 case NoCalls(_) =>
                   findMatching(nextScopes, failedMatches)
 
-                case call @ Call(capability, assertion, returns, _, invocations) if invoked isEqual capability =>
+                case call @ Call(capability, assertion, returns, _, invocations)
+                    if invoked isCompatible capability.signature =>
                   debug(s"::: matched call $capability")
                   assertion.asInstanceOf[Assertion[I]].test(args) match {
                     case true =>
@@ -88,7 +89,8 @@ object ProxyFactory {
                 case Call(capability, assertion, _, _, _) =>
                   debug(s"::: invalid call $capability")
                   val invalidCall =
-                    if (invoked.id == capability.id) InvalidPolyType(invoked, args, capability, assertion)
+                    if (invoked isSameMethod capability.signature)
+                      InvalidPolyType(invoked, args, capability, assertion)
                     else InvalidCapability(invoked, capability, assertion)
 
                   handleLeafFailure(invalidCall, nextScopes, failedMatches)
