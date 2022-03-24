@@ -34,11 +34,11 @@ trait MockSpecUtils[R] {
   ): ZSpec[Live, E] = test(name) {
     val result =
       Live.live {
-        ZIO.scoped(
-          mock.build
-            .flatMap(app.provideEnvironment(_))
-            .timeout(duration)
-        )
+        ZIO
+          .scoped {
+            mock.build.flatMap(app.provideEnvironment(_))
+          }
+          .timeout(duration)
       }
 
     assertM(result)(check)
@@ -50,13 +50,14 @@ trait MockSpecUtils[R] {
       check: Assertion[Throwable]
   ): ZSpec[Any, Any] = test(name) {
     val result: IO[Any, Throwable] =
-      ZIO.scoped(
-        mock.build
-          .flatMap(app.provideEnvironment(_))
-          .orElse(ZIO.unit)
-          .absorb
-          .flip
-      )
+      ZIO
+        .scoped {
+          mock.build
+            .flatMap(app.provideEnvironment(_))
+        }
+        .orElse(ZIO.unit)
+        .absorb
+        .flip
 
     assertM(result)(check)
   }
