@@ -14,7 +14,7 @@ trait MockSpecUtils[R] {
       app: ZIO[R, E, A],
       check: Assertion[A]
   ): ZSpec[Any, E] = test(name) {
-    val result = ZIO.scoped(mock.build.flatMap(app.provideEnvironment(_)))
+    val result = ZIO.scoped[Any](mock.build.flatMap(app.provideEnvironment(_)))
     assertM(result)(check)
   }
 
@@ -23,7 +23,7 @@ trait MockSpecUtils[R] {
       app: ZIO[R, E, A],
       check: Assertion[E]
   ): ZSpec[Any, A] = test(name) {
-    val result = ZIO.scoped(mock.build.flatMap(app.flip.provideEnvironment(_)))
+    val result = ZIO.scoped[Any](mock.build.flatMap(app.flip.provideEnvironment(_)))
     assertM(result)(check)
   }
 

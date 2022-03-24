@@ -15,7 +15,7 @@ object ComposedMockSpec extends ZIOBaseSpec {
       app: ZIO[R1, E, A],
       check: Assertion[A]
   ) = test(name) {
-    val result = ZIO.scoped(mock.build.flatMap(app.provideEnvironment(_)))
+    val result = ZIO.scoped[Any](mock.build.flatMap(app.provideEnvironment(_)))
     assertM(result)(check)
   }
 
