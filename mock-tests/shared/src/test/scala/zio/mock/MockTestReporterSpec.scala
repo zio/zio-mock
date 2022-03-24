@@ -1,5 +1,6 @@
 package zio.mock
 
+import zio.Scope
 import zio.mock.ReportingTestUtils._
 import zio.test.Assertion._
 import zio.test.TestAspect._
@@ -8,7 +9,15 @@ import zio.test._
 object MockTestReporterSpec extends ZIOBaseSpec {
 
   def spec: ZSpec[
-    Annotations with Live with Sized with TestClock with TestConfig with TestConsole with TestRandom with TestSystem,
+    Annotations
+      with Live
+      with Sized
+      with TestClock
+      with TestConfig
+      with TestConsole
+      with TestRandom
+      with TestSystem
+      with Scope,
     Any
   ] =
     suite("MockTestReporterSpec")(

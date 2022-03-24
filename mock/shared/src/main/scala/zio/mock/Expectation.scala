@@ -21,7 +21,7 @@ import zio.mock.Result.{Fail, Succeed}
 import zio.mock.internal.{ExpectationState, MockException, MockState, ProxyFactory}
 import zio.stacktracer.TracingImplicits.disableAutoTrace
 import zio.test.Assertion
-import zio.{EnvironmentTag, IO, Managed, ULayer, URLayer, ZLayer, ZTraceElement}
+import zio.{EnvironmentTag, IO, ULayer, URLayer, ZIO, ZLayer, ZTraceElement}
 
 import scala.language.implicitConversions
 
@@ -340,9 +340,9 @@ object Expectation {
   implicit def toLayer[R: EnvironmentTag](
       trunk: Expectation[R]
   )(implicit trace: ZTraceElement): ULayer[R] =
-    ZLayer.fromManagedEnvironment(
+    ZLayer.scopedEnvironment(
       for {
-        state <- Managed.acquireReleaseWith(MockState.make(trunk))(MockState.checkUnmetExpectations)
+        state <- ZIO.acquireRelease(MockState.make(trunk))(MockState.checkUnmetExpectations)
         env   <- (ProxyFactory.mockProxy(state) >>> trunk.mock.compose).build
       } yield env
     )
