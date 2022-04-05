@@ -7,7 +7,7 @@ import zio.mock.module.{PureModule, PureModuleMock}
 import zio.test.Assertion._
 import zio.test._
 import zio.test.render.TestRenderer
-import zio.{Cause, Promise, Scope, ZIO, ZLayer, ZTraceElement}
+import zio.{Cause, Console, Promise, Random, Scope, ZIO, ZLayer, ZTraceElement}
 
 import scala.{Console => SConsole}
 
@@ -59,21 +59,36 @@ object ReportingTestUtils {
       output <- TestConsole.output
     } yield output.mkString
 
+  // ==================== This is the ZIO 2.0 RC3 Compatible Code that breaks under RC4 ====================
+  // It was replaced with the same code that is in ZIO 2.0 RC4 `ReportingTestUtils`.  
+  // def runSummary(spec: ZSpec[TestEnvironment, String]): ZIO[TestEnvironment, Nothing, String] =
+  //   for {
+  //     results      <- TestTestRunner(testEnvironment)
+  //                       .run(spec)
+  //                       .provideSomeLayer(
+  //                         TestLogger.fromConsole ++ TestClock.default
+  //                       )
+  //     actualSummary = SummaryBuilder.buildSummary(results)
+  //   } yield actualSummary.summary
+
   def runSummary(spec: ZSpec[TestEnvironment, String]): ZIO[TestEnvironment, Nothing, String] =
     for {
-      results      <- TestTestRunner(testEnvironment)
-                        .run(spec)
-                        .provideSomeLayer(
-                          TestLogger.fromConsole ++ TestClock.default
-                        )
-      actualSummary = SummaryBuilder.buildSummary(results)
-    } yield actualSummary.summary
+      summary <-
+        TestTestRunner(testEnvironment)
+          .run(spec)
+          .provideLayer(
+            Scope.default >>> ((TestLogger.fromConsole >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live) ++ TestClock.default ++ Random.live)
+          )
+    } yield summary.summary
 
   private[this] def TestTestRunner(testEnvironment: ZLayer[Scope, Nothing, TestEnvironment])(implicit
       trace: ZTraceElement
   ) =
     TestRunner[TestEnvironment, String](
-      executor = TestExecutor.default[TestEnvironment, String](testEnvironment),
+      executor = TestExecutor.default[TestEnvironment, String](
+        testEnvironment,
+        (Console.live >>> TestLogger.fromConsole >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live)
+      ),
       reporter = MockTestReporter(TestRenderer.default, TestAnnotationRenderer.default)
     )
 
