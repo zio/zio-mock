@@ -5,15 +5,16 @@ import zio.test.Assertion
 import zio.{Clock, Console, ZIO}
 
 import java.io.IOException
-import zio.test.{Spec, TestFailure, TestSuccess}
+import zio.test._
 
-object ComposedEmptyMockSpec extends ZIOBaseSpec with MockSpecUtils[ComposedEmptyMockSpecCompat.Environment] {
+object ComposedEmptyMockSpec extends ZIOBaseSpec {
 
   import Assertion._
   import Expectation._
   import MockException._
+  import testing._
 
-  def branchingProgram(predicate: Boolean): ZIO[Console with Clock, IOException, Unit] =
+  def branchingProgram(predicate: Boolean): ZIO[Any, IOException, Unit] =
     ZIO
       .succeed(predicate)
       .flatMap {
@@ -22,47 +23,48 @@ object ComposedEmptyMockSpec extends ZIOBaseSpec with MockSpecUtils[ComposedEmpt
       }
       .unit
 
-  def spec: Spec[Any, TestFailure[Any], TestSuccess] = suite("ComposedEmptyMockSpec")(
+  def spec = suite("ComposedEmptyMockSpec")(
     suite("expect no calls on empty mocks")(
-      testValue("should succeed when no calls on Console")(
-        MockConsole.empty ++ MockClock.NanoTime(value(42L)),
-        branchingProgram(false),
-        isUnit
-      ), {
+      test("should succeed when no calls on Console") {
+        branchingProgram(false).as(assertTrue(true))
+      } @@ TestAspects.withEnv(
+        (MockConsole.empty ++ MockClock.NanoTime(value(42L))).build
+      ),
+      test("should fail when call on Console happened") {
         type M = Capability[Console, Unit, IOException, String]
         type X = UnexpectedCallException[Console, Unit, IOException, String]
 
-        testDied("should fail when call on Console happened")(
-          MockConsole.empty ++ MockClock.NanoTime(value(42L)),
-          branchingProgram(true),
-          isSubtype[X](
-            hasField[X, M]("capability", _.capability, equalTo(MockConsole.ReadLine)) &&
-              hasField[X, Any]("args", _.args, equalTo(()))
+        swapFailure(branchingProgram(true)).map { e =>
+          assert(e)(
+            isSubtype[X](
+              hasField[X, M]("capability", _.capability, equalTo(MockConsole.ReadLine)) &&
+                hasField[X, Any]("args", _.args, equalTo(()))
+            )
           )
-        )
-      },
-      testValue("should succeed when no calls on Clock")(
-        MockClock.empty ++ MockConsole.ReadLine(value("foo")),
-        branchingProgram(true),
-        isUnit
-      ), {
+        }
+      } @@ TestAspects.withEnv(
+        (MockConsole.empty ++ MockClock.empty).build
+      ),
+      test("should succeed when no calls on Clock") {
+        branchingProgram(true).as(assertTrue(true))
+      } @@ TestAspects.withEnv(
+        (MockClock.empty ++ MockConsole.ReadLine(value("foo"))).build
+      ),
+      test("should fail when call on Clock happened") {
 
         type M = Capability[Clock, Unit, Nothing, Long]
         type X = UnexpectedCallException[Clock, Unit, Nothing, Long]
-
-        testDied("should fail when call on Clock happened")(
-          MockClock.empty ++ MockConsole.ReadLine(value("foo")),
-          branchingProgram(false),
-          isSubtype[X](
-            hasField[X, M]("capability", _.capability, equalTo(MockClock.NanoTime)) &&
-              hasField[X, Any]("args", _.args, equalTo(()))
+        swapFailure(branchingProgram(false)).map { e =>
+          assert(e)(
+            isSubtype[X](
+              hasField[X, M]("capability", _.capability, equalTo(MockClock.NanoTime)) &&
+                hasField[X, Any]("args", _.args, equalTo(()))
+            )
           )
-        )
-      }
+        }
+      } @@ TestAspects.withEnv(
+        (MockClock.empty ++ MockConsole.empty).build
+      )
     )
   )
-}
-
-object ComposedEmptyMockSpecCompat {
-  type Environment = Console with Clock
 }
