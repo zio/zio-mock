@@ -5,33 +5,35 @@ import zio.mock.internal.MockException
 import zio.test.Assertion
 
 import java.io.IOException
-import zio.test.{Spec, TestFailure, TestSuccess}
+import zio.test._
+import testing._
 
-object EmptyMockSpec extends ZIOBaseSpec with MockSpecUtils[Console] {
+object EmptyMockSpec extends ZIOBaseSpec {
 
   import Assertion._
   import MockException._
 
-  def spec: Spec[Any, TestFailure[Any], TestSuccess] = suite("EmptyMockSpec")(
+  def spec = suite("EmptyMockSpec")(
     suite("expect no calls on empty mocks")(
-      testValue("should succeed when no call")(
-        MockConsole.empty,
-        ZIO.when(false)(Console.printLine("foo")).unit,
-        isUnit
-      ), {
+      test("should succeed when no call") {
+        ZIO.when(false)(Console.printLine("foo")).as(assertTrue(true))
+      },
+      test("should fail when call happened") {
 
         type M = Capability[Console, Any, IOException, Unit]
         type X = UnexpectedCallException[Console, Any, IOException, Unit]
 
-        testDied("should fail when call happened")(
-          MockConsole.empty,
-          ZIO.when(true)(Console.printLine("foo")),
-          isSubtype[X](
-            hasField[X, M]("capability", _.capability, equalTo(MockConsole.PrintLine)) &&
-              hasField[X, Any]("args", _.args, equalTo("foo"))
+        swapFailure(ZIO.when(true)(Console.printLine("foo"))).map { e =>
+          assert(e)(
+            isSubtype[X](
+              hasField[X, M]("capability", _.capability, equalTo(MockConsole.PrintLine)) &&
+                hasField[X, Any]("args", _.args, equalTo("foo"))
+            )
           )
-        )
+        }
       }
+    ) @@ TestAspects.withEnv(
+      MockConsole.empty.build
     )
   )
 }
