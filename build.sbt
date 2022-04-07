@@ -40,7 +40,7 @@ addCommandAlias(
   ";mockNative/compile"
 )
 
-val zioVersion = "2.0.0-RC4"
+val zioVersion = "2.0.0-RC4+31-9d79bc38+20220407-0911-SNAPSHOT"
 
 lazy val root = (project in file("."))
   .aggregate(

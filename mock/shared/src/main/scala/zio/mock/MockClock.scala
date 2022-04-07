@@ -38,6 +38,7 @@ object MockClock extends Mock[Clock] {
 
   val compose: URLayer[Proxy, Clock] = {
     implicit val trace = Tracer.newTrace
+    ZLayer.fromZIO(
     ZIO
       .service[Proxy]
       .map { proxy =>
@@ -53,6 +54,6 @@ object MockClock extends Mock[Clock] {
           def javaClock(implicit trace: zio.ZTraceElement): UIO[time.Clock]                  = proxy(JavaClock)
         }
       }
-      .toLayer
+    )
   }
 }

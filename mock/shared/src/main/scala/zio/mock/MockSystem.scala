@@ -18,7 +18,7 @@ package zio.mock
 
 import zio.internal.stacktracer.Tracer
 import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.{IO, System, UIO, URLayer, ZIO, ZTraceElement}
+import zio.{IO, System, UIO, URLayer, ZIO, ZLayer, ZTraceElement}
 
 object MockSystem extends Mock[System] {
 
@@ -34,6 +34,7 @@ object MockSystem extends Mock[System] {
 
   val compose: URLayer[Proxy, System] = {
     implicit val trace = Tracer.newTrace
+    ZLayer.fromZIO(
     ZIO
       .service[Proxy]
       .map(proxy =>
@@ -65,6 +66,6 @@ object MockSystem extends Mock[System] {
 
         }
       )
-      .toLayer
+    )
   }
 }
