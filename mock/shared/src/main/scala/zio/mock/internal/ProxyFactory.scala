@@ -36,7 +36,12 @@ object ProxyFactory {
     */
   def mockProxy[R: EnvironmentTag](state: MockState[R])(implicit trace: ZTraceElement): ULayer[Proxy] =
     ZLayer.succeed(new Proxy {
-      def invoke[RIn, ROut, I, E, A](invoked: Capability[RIn, I, E, A], args: I): ZIO[ROut, E, A] = {
+
+      
+       debug(s"::: new Proxy created")
+      def invoke[RIn, ROut, I, E, A](invoked: Capability[RIn, I, E, A], args: I): ZIO[ROut, E, A] = {   
+       debug(s"::: invoked $invoked")
+
         sealed trait MatchResult
         object MatchResult {
           case object UnexpectedCall                      extends MatchResult
@@ -348,8 +353,10 @@ object ProxyFactory {
               )
           }
 
+        debug(s"::: invoked ${invoked} before 'for'.")
         for {
           id          <- state.callsCountRef.updateAndGet(_ + 1)
+          _ = debug(s"::: invoked ${invoked} before setting `matchResult`.")
           matchResult <-
             state.expectationRef.modify { root =>
               val scope = Scope[R](root, id, identity)
@@ -360,6 +367,7 @@ object ProxyFactory {
                 case MatchResult.Failure(_)       => res -> root
               }
             }
+          _ = debug(s"::: invoked $invoked\n  ::: matchedResult: ${matchResult.toString}")
           matched     <-
             matchResult match {
               case MatchResult.Success(matched)  => ZIO.succeed(matched)
@@ -369,6 +377,7 @@ object ProxyFactory {
           _            = debug(s"::: setting root to\n${prettify(matched.expectation)}")
           output      <- matched.result
         } yield output
+
       }
     })
 }
