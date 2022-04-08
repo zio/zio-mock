@@ -1,9 +1,6 @@
 package zio.mock
 
-import zio.mock.ReportingTestUtils._
-import zio.test.Assertion._
 import zio.test.TestAspect._
-import zio.test._
 
 object MockTestReporterSpecOld extends ZIOBaseSpec {
 
