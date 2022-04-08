@@ -2,7 +2,7 @@ package zio.mock.module
 
 import com.github.ghik.silencer.silent
 import zio.mock.{Mock, Proxy}
-import zio.{IO, EnvironmentTag, UIO, URLayer, ZIO}
+import zio.{EnvironmentTag, IO, UIO, URLayer, ZIO, ZLayer}
 
 /** Example pure module used for testing ZIO Mock framework.
   */
@@ -38,7 +38,8 @@ object PureModuleMock extends Mock[PureModule] {
   object MaxParams extends Effect[T22[Int], String, String]
 
   @silent("is never used")
-  val compose: URLayer[Proxy, PureModule] =
+  val compose: URLayer[Proxy, PureModule] = {
+    ZLayer.fromZIO(
     ZIO
       .service[Proxy]
       .flatMap { proxy =>
@@ -100,5 +101,6 @@ object PureModuleMock extends Mock[PureModule] {
           }
         }
       }
-      .toLayer
+    )
+  }
 }

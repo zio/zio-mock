@@ -51,10 +51,11 @@ object ReportingTestUtilsOld {
       spec: ZSpec[TestEnvironment, String]
   )(implicit trace: ZTraceElement): ZIO[TestEnvironment with Scope, Nothing, String] =
     for {
+      console <- ZIO.console
       _      <- TestTestRunner(testEnvironment)
                   .run(spec)
                   .provideSomeLayer(
-                    TestLogger.fromConsole ++ TestClock.default
+                    TestLogger.fromConsole(console) ++ TestClock.default
                   )
       output <- TestConsole.output
     } yield output.mkString
@@ -73,11 +74,12 @@ object ReportingTestUtilsOld {
 
   def runSummary(spec: ZSpec[TestEnvironment, String]): ZIO[TestEnvironment, Nothing, String] =
     for {
+      console <- ZIO.console
       summary <-
         TestTestRunner(testEnvironment)
           .run(spec)
           .provideLayer(
-            Scope.default >>> ((TestLogger.fromConsole >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live) ++ TestClock.default ++ Random.live)
+            Scope.default >>> ((TestLogger.fromConsole(console) >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live) ++ TestClock.default ++ Random.live)
           )
     } yield summary.summary
 
@@ -87,7 +89,7 @@ object ReportingTestUtilsOld {
     TestRunner[TestEnvironment, String](
       executor = TestExecutor.default[TestEnvironment, String](
         testEnvironment,
-        (Console.live >>> TestLogger.fromConsole >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live)
+        (TestLogger.fromConsole(Console.ConsoleLive) >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live)
       ),
       reporter = MockTestReporter(TestRenderer.default, TestAnnotationRenderer.default)
     )
@@ -268,7 +270,7 @@ object ReportingTestUtilsOld {
   val mock5: ZSpec[Any, String] = test("Failing layer") {
     for {
       promise     <- Promise.make[Nothing, Unit]
-      failingLayer = (promise.await *> ZIO.fail("failed!")).toLayer[String]
+      failingLayer = ZLayer.fromZIO(promise.await *> ZIO.fail("failed!"))
       mock         = PureModuleMock.ZeroParams(value("mocked")).toLayer.tap { _ =>
                        promise.succeed(())
                      }

@@ -18,7 +18,7 @@ package zio.mock
 
 import zio.internal.stacktracer.Tracer
 import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.{Console, IO, URLayer, ZIO, ZTraceElement}
+import zio.{Console, IO, URLayer, ZIO, ZLayer, ZTraceElement}
 
 import java.io.IOException
 
@@ -32,6 +32,7 @@ object MockConsole extends Mock[Console] {
 
   val compose: URLayer[Proxy, Console] = {
     implicit val trace = Tracer.newTrace
+    ZLayer.fromZIO(
     ZIO
       .service[Proxy]
       .map(proxy =>
@@ -44,6 +45,6 @@ object MockConsole extends Mock[Console] {
           def readLine(implicit trace: ZTraceElement): IO[IOException, String]                   = proxy(ReadLine)
         }
       )
-      .toLayer
+    )
   }
 }

@@ -18,7 +18,7 @@ package zio.mock
 
 import zio.internal.stacktracer.Tracer
 import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.{Chunk, Random, UIO, URLayer, ZIO, ZTraceElement}
+import zio.{Chunk, Random, UIO, URLayer, ZIO, ZLayer, ZTraceElement}
 
 import java.util.UUID
 
@@ -45,6 +45,7 @@ object MockRandom extends Mock[Random] {
 
   val compose: URLayer[Proxy, Random] = {
     implicit val trace = Tracer.newTrace
+    ZLayer.fromZIO(
     ZIO
       .service[Proxy]
       .map(proxy =>
@@ -80,6 +81,6 @@ object MockRandom extends Mock[Random] {
             proxy(Shuffle, collection).asInstanceOf[UIO[Collection[A]]]
         }
       )
-      .toLayer
+    )
   }
 }
