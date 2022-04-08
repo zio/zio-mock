@@ -35,37 +35,37 @@ object MockSystem extends Mock[System] {
   val compose: URLayer[Proxy, System] = {
     implicit val trace = Tracer.newTrace
     ZLayer.fromZIO(
-    ZIO
-      .service[Proxy]
-      .map(proxy =>
-        new System {
-          def env(variable: => String)(implicit trace: ZTraceElement): IO[SecurityException, Option[String]]        =
-            proxy(Env, variable)
-          def envOrElse(variable: => String, alt: => String)(implicit
-              trace: ZTraceElement
-          ): IO[SecurityException, String] =
-            proxy(EnvOrElse, variable, alt)
-          def envOrOption(variable: => String, alt: => Option[String])(implicit
-              trace: ZTraceElement
-          ): IO[SecurityException, Option[String]] =
-            proxy(EnvOrOption, variable, alt)
-          def envs(implicit trace: ZTraceElement): IO[SecurityException, Map[String, String]]                       =
-            proxy(Envs)
-          def lineSeparator(implicit trace: ZTraceElement): UIO[String]                                             =
-            proxy(LineSeparator)
-          def properties(implicit trace: ZTraceElement): IO[Throwable, Map[String, String]]                         =
-            proxy(Properties)
-          def property(prop: => String)(implicit trace: ZTraceElement): IO[Throwable, Option[String]]               =
-            proxy(Property, prop)
-          def propertyOrElse(prop: => String, alt: => String)(implicit trace: ZTraceElement): IO[Throwable, String] =
-            proxy(PropertyOrElse, prop, alt)
-          def propertyOrOption(prop: => String, alt: => Option[String])(implicit
-              trace: ZTraceElement
-          ): IO[Throwable, Option[String]] =
-            proxy(PropertyOrOption, prop, alt)
+      ZIO
+        .service[Proxy]
+        .map(proxy =>
+          new System {
+            def env(variable: => String)(implicit trace: ZTraceElement): IO[SecurityException, Option[String]]        =
+              proxy(Env, variable)
+            def envOrElse(variable: => String, alt: => String)(implicit
+                trace: ZTraceElement
+            ): IO[SecurityException, String] =
+              proxy(EnvOrElse, variable, alt)
+            def envOrOption(variable: => String, alt: => Option[String])(implicit
+                trace: ZTraceElement
+            ): IO[SecurityException, Option[String]] =
+              proxy(EnvOrOption, variable, alt)
+            def envs(implicit trace: ZTraceElement): IO[SecurityException, Map[String, String]]                       =
+              proxy(Envs)
+            def lineSeparator(implicit trace: ZTraceElement): UIO[String]                                             =
+              proxy(LineSeparator)
+            def properties(implicit trace: ZTraceElement): IO[Throwable, Map[String, String]]                         =
+              proxy(Properties)
+            def property(prop: => String)(implicit trace: ZTraceElement): IO[Throwable, Option[String]]               =
+              proxy(Property, prop)
+            def propertyOrElse(prop: => String, alt: => String)(implicit trace: ZTraceElement): IO[Throwable, String] =
+              proxy(PropertyOrElse, prop, alt)
+            def propertyOrOption(prop: => String, alt: => Option[String])(implicit
+                trace: ZTraceElement
+            ): IO[Throwable, Option[String]] =
+              proxy(PropertyOrOption, prop, alt)
 
-        }
-      )
+          }
+        )
     )
   }
 }

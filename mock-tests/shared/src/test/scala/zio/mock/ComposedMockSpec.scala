@@ -17,8 +17,8 @@ object ComposedMockSpec extends ZIOBaseSpec {
         } yield (assertTrue(true))
 
       } @@ TestAspects.withExpectationsAsEnv(
-        MockClock.NanoTime(value(42L)) ++ 
-        MockConsole.PrintLine(equalTo("42"), unit)
+        MockClock.NanoTime(value(42L)) ++
+          MockConsole.PrintLine(equalTo("42"), unit)
       ),
       test("Random with Clock with System with Console") {
 

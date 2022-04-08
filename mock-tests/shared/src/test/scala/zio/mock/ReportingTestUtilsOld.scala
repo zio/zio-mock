@@ -52,16 +52,16 @@ object ReportingTestUtilsOld {
   )(implicit trace: ZTraceElement): ZIO[TestEnvironment with Scope, Nothing, String] =
     for {
       console <- ZIO.console
-      _      <- TestTestRunner(testEnvironment)
-                  .run(spec)
-                  .provideSomeLayer(
-                    TestLogger.fromConsole(console) ++ TestClock.default
-                  )
-      output <- TestConsole.output
+      _       <- TestTestRunner(testEnvironment)
+                   .run(spec)
+                   .provideSomeLayer(
+                     TestLogger.fromConsole(console) ++ TestClock.default
+                   )
+      output  <- TestConsole.output
     } yield output.mkString
 
   // ==================== This is the ZIO 2.0 RC3 Compatible Code that breaks under RC4 ====================
-  // It was replaced with the same code that is in ZIO 2.0 RC4 `ReportingTestUtils`.  
+  // It was replaced with the same code that is in ZIO 2.0 RC4 `ReportingTestUtils`.
   // def runSummary(spec: ZSpec[TestEnvironment, String]): ZIO[TestEnvironment, Nothing, String] =
   //   for {
   //     results      <- TestTestRunner(testEnvironment)
@@ -79,7 +79,9 @@ object ReportingTestUtilsOld {
         TestTestRunner(testEnvironment)
           .run(spec)
           .provideLayer(
-            Scope.default >>> ((TestLogger.fromConsole(console) >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live) ++ TestClock.default ++ Random.live)
+            Scope.default >>> ((TestLogger.fromConsole(
+              console
+            ) >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live) ++ TestClock.default ++ Random.live)
           )
     } yield summary.summary
 
@@ -89,7 +91,9 @@ object ReportingTestUtilsOld {
     TestRunner[TestEnvironment, String](
       executor = TestExecutor.default[TestEnvironment, String](
         testEnvironment,
-        (TestLogger.fromConsole(Console.ConsoleLive) >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live)
+        (TestLogger.fromConsole(
+          Console.ConsoleLive
+        ) >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live)
       ),
       reporter = MockTestReporter(TestRenderer.default, TestAnnotationRenderer.default)
     )

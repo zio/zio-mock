@@ -33,18 +33,18 @@ object MockConsole extends Mock[Console] {
   val compose: URLayer[Proxy, Console] = {
     implicit val trace = Tracer.newTrace
     ZLayer.fromZIO(
-    ZIO
-      .service[Proxy]
-      .map(proxy =>
-        new Console {
-          def print(line: => Any)(implicit trace: ZTraceElement): IO[IOException, Unit]          = proxy(Print, line)
-          def printError(line: => Any)(implicit trace: ZTraceElement): IO[IOException, Unit]     = proxy(PrintError, line)
-          def printLine(line: => Any)(implicit trace: ZTraceElement): IO[IOException, Unit]      = proxy(PrintLine, line)
-          def printLineError(line: => Any)(implicit trace: ZTraceElement): IO[IOException, Unit] =
-            proxy(PrintLineError, line)
-          def readLine(implicit trace: ZTraceElement): IO[IOException, String]                   = proxy(ReadLine)
-        }
-      )
+      ZIO
+        .service[Proxy]
+        .map(proxy =>
+          new Console {
+            def print(line: => Any)(implicit trace: ZTraceElement): IO[IOException, Unit]          = proxy(Print, line)
+            def printError(line: => Any)(implicit trace: ZTraceElement): IO[IOException, Unit]     = proxy(PrintError, line)
+            def printLine(line: => Any)(implicit trace: ZTraceElement): IO[IOException, Unit]      = proxy(PrintLine, line)
+            def printLineError(line: => Any)(implicit trace: ZTraceElement): IO[IOException, Unit] =
+              proxy(PrintLineError, line)
+            def readLine(implicit trace: ZTraceElement): IO[IOException, String]                   = proxy(ReadLine)
+          }
+        )
     )
   }
 }

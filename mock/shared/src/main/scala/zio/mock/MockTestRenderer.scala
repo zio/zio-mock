@@ -7,7 +7,7 @@ import zio.test.render.LogLine.Fragment.Style
 import zio.test.render.LogLine.{Fragment, Line, Message}
 import zio.test._
 
-trait MockTestRenderer extends TestRenderer {
+trait MockTestRenderer  extends TestRenderer {
   private val tabSize = 2
 
   override def render(results: Seq[ExecutionResult], testAnnotationRenderer: TestAnnotationRenderer): Seq[String] =
@@ -17,7 +17,7 @@ trait MockTestRenderer extends TestRenderer {
       val output = result.resultType match {
         case ResultType.Suite =>
           renderSuite(result.status, result.offset, message)
-        case ResultType.Test =>
+        case ResultType.Test  =>
           renderTest(result.status, result.offset, message)
         case ResultType.Other =>
           Message(result.lines)
@@ -29,8 +29,8 @@ trait MockTestRenderer extends TestRenderer {
 
   private def renderSuite(status: Status, offset: Int, message: Message): Message =
     status match {
-      case Status.Passed => withOffset(offset)(info("+") + sp) +: message
-      case Status.Failed => withOffset(offset)(Line.empty) +: message
+      case Status.Passed  => withOffset(offset)(info("+") + sp) +: message
+      case Status.Failed  => withOffset(offset)(Line.empty) +: message
       case Status.Ignored =>
         withOffset(offset)(Line.empty) +: message :+ fr(" - " + TestAnnotation.ignored.identifier + " suite").toLine
     }
@@ -63,15 +63,15 @@ trait MockTestRenderer extends TestRenderer {
   }
 
   private def renderAnnotations(
-    annotations: List[TestAnnotationMap],
-    annotationRenderer: TestAnnotationRenderer
+      annotations: List[TestAnnotationMap],
+      annotationRenderer: TestAnnotationRenderer
   ): Message =
     annotations match {
       case annotations :: ancestors =>
         val rendered = annotationRenderer.run(ancestors, annotations)
         if (rendered.isEmpty) Message.empty
         else Message(rendered.mkString(" - ", ", ", ""))
-      case Nil => Message.empty
+      case Nil                      => Message.empty
     }
 
   private def renderOffset(n: Int)(s: String) =

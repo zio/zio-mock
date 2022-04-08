@@ -2,12 +2,10 @@ package zio.mock
 
 import zio.test.Assertion.{equalTo, isGreaterThan, isLessThan, isRight, isSome, not}
 import zio.test.render.TestRenderer
-import zio.{Cause, Console, Random, Scope, ZIO, ZLayer, ZTraceElement}
 import zio.test._
+import zio.{Cause, Console, Random, Scope, ZIO, ZLayer, ZTraceElement}
+
 import scala.{Console => SConsole}
-import zio.mock.internal.MockException._
-import zio.mock.internal.InvalidCall._
-import zio.mock.module.PureModuleMock
 
 object ReportingTestUtils {
 
@@ -45,40 +43,47 @@ object ReportingTestUtils {
     ) + "\n"
   }
 
+  // TODO de-dup layers?
   def runLog(
       spec: ZSpec[TestEnvironment, String]
   )(implicit trace: ZTraceElement): ZIO[TestEnvironment with Scope, Nothing, String] =
     for {
       console <- ZIO.console
-      _      <-
-        TestTestRunner(testEnvironment)
+      _       <-
+        TestTestRunner(testEnvironment, console)
           .run(spec)
           .provideLayer(
-            (TestLogger.fromConsole(console) >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live) ++ TestClock.default ++ Random.live
+            (TestLogger.fromConsole(
+              console
+            ) >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live) ++ TestClock.default ++ Random.live
           )
-      output <- TestConsole.output
+      output  <- TestConsole.output
     } yield output.mkString
 
   def runSummary(spec: ZSpec[TestEnvironment, String]): ZIO[TestEnvironment, Nothing, String] =
     for {
       console <- ZIO.console
       summary <-
-        TestTestRunner(testEnvironment)
+        TestTestRunner(testEnvironment, console)
           .run(spec)
           .provideLayer(
-            Scope.default >>> ((TestLogger.fromConsole(console) >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live) ++ TestClock.default ++ Random.live)
+            Scope.default >>> ((TestLogger.fromConsole(
+              console
+            ) >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live) ++ TestClock.default ++ Random.live)
           )
     } yield summary.summary
 
-  private[this] def TestTestRunner(testEnvironment: ZLayer[Scope, Nothing, TestEnvironment])(implicit
+  private[this] def TestTestRunner(testEnvironment: ZLayer[Scope, Nothing, TestEnvironment], console: Console)(implicit
       trace: ZTraceElement
   ) =
     TestRunner[TestEnvironment, String](
       executor = TestExecutor.default[TestEnvironment, String](
         testEnvironment,
-        TestLogger.fromConsole(Console.ConsoleLive) >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live
+        (Console.live >>> TestLogger.fromConsole(
+          console
+        ) >>> ExecutionEventPrinter.live >>> TestOutput.live >>> ExecutionEventSink.live)
       ),
-      reporter = MockTestReporter(TestRenderer.default, TestAnnotationRenderer.default)
+      reporter = DefaultTestReporter(TestRenderer.default, TestAnnotationRenderer.default)
     )
 
   def test1(implicit trace: ZTraceElement): ZSpec[Any, Nothing] = test("Addition works fine")(assert(1 + 1)(equalTo(2)))
@@ -218,31 +223,4 @@ object ReportingTestUtils {
         cyan(s"at $path:$line")
       }
       .getOrElse("")
-
-  def mock1(implicit trace: ZTraceElement): ZSpec[Any, Nothing] = test("Invalid call") {
-    val pgm = ZIO.fail(
-      InvalidCallException(
-        List(
-          InvalidCapability(PureModuleMock.SingleParam, PureModuleMock.ParameterizedCommand, equalTo(1)),
-          InvalidArguments(PureModuleMock.ParameterizedCommand, 2, equalTo(1))
-        )
-      )
-    )
-    assert(pgm)(Assertion.anything)
-  }
-
-  def mock1Expected(implicit trace: ZTraceElement): Vector[String] = Vector(
-    expectedFailure("Invalid call"),
-    withOffset(2)(s"${red("- could not find a matching expectation")}\n"),
-    withOffset(4)(
-      s"${red("- zio.mock.module.PureModuleMock.ParameterizedCommand called with invalid arguments")}\n"
-    ),
-    withOffset(6)(s"${blue("2")} did not satisfy ${cyan("equalTo(1)")}\n"),
-    withOffset(6)(assertSourceLocation() + "\n"),
-    withOffset(4)("\n"),
-    withOffset(4)(s"${red("- invalid call to zio.mock.module.PureModuleMock.SingleParam")}\n"),
-    withOffset(6)(
-      s"expected zio.mock.module.PureModuleMock.ParameterizedCommand with arguments ${cyan("equalTo(1)")}\n"
-    )
-  )
 }

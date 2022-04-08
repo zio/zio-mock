@@ -46,10 +46,10 @@ object MockTestReporterSpec extends ZIOBaseSpec {
         },
         test("negated failures") {
           runLog(test8).map(res => test8Expected.map(expected => assertTrue(res.contains(expected))).reduce(_ && _))
-        },
-        test("correctly reports mock failure of invalid call") {
-          runLog(mock1).map(str => assertTrue(str == mock1Expected.mkString + reportStats(0, 0, 1)))
-        } 
+        }
+        // test("correctly reports mock failure of invalid call") {
+        //   runLog(mock1).map(str => assertTrue(str == mock1Expected.mkString + reportStats(0, 0, 1)))
+        // }
       )
     ) @@ silent
 }
