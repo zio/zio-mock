@@ -312,6 +312,7 @@ private[mock] object MockableMacro {
           ..$tags
 
           val compose: $composeAsc =
+            _root_.zio.ZLayer.fromZIO(
             _root_.zio.ZIO.service[_root_.zio.mock.Proxy].flatMap { proxy =>
               withRuntime[_root_.zio.mock.Proxy].map { rts =>
                 class $serviceClassName extends $service {
@@ -319,7 +320,8 @@ private[mock] object MockableMacro {
                 }
                 new $serviceClassName
               }
-            }.toLayer
+            }
+            )
             
           ..$body
         }

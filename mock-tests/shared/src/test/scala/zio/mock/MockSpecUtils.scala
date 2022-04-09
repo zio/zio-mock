@@ -3,6 +3,7 @@ package zio.mock
 import zio._
 import zio.mock.module.T22
 import zio.test.{Assertion, Live, ZSpec, assertM, test}
+import testing._
 
 trait MockSpecUtils[R] {
 
@@ -49,16 +50,17 @@ trait MockSpecUtils[R] {
       app: ZIO[R, E, A],
       check: Assertion[Throwable]
   ): ZSpec[Any, Any] = test(name) {
+
     val result: IO[Any, Throwable] =
-      ZIO
-        .scoped {
-          mock.build
-            .flatMap(app.provideEnvironment(_))
-        }
-        .orElse(ZIO.unit)
-        .absorb
-        .flip
+      swapFailure(
+        ZIO
+          .scoped {
+            mock.build
+              .flatMap(app.provideEnvironment(_))
+          }
+      )
 
     assertM(result)(check)
   }
+
 }
