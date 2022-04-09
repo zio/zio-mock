@@ -18,7 +18,7 @@ object TestAspects {
         // we need to explicitly override them in a scope.
         _     <- ZEnv.services.locallyScopedWith(_.union(mockedZEnv))
       } yield {
-        { success: TestSuccess => ZIO.succeed(success) }
+        { (success: TestSuccess) => ZIO.succeed(success) }
       }).mapError(TestFailure.fail)
     }
     // format: on
