@@ -16,14 +16,13 @@
 
 package zio.mock
 
-import zio._
 import zio.internal.stacktracer.Tracer
 import zio.stacktracer.TracingImplicits.disableAutoTrace
+import zio.{UIO, _}
 
+import java.time
 import java.time.OffsetDateTime
 import java.util.concurrent.TimeUnit
-import java.time
-import zio.UIO
 
 object MockClock extends Mock[Clock] {
 

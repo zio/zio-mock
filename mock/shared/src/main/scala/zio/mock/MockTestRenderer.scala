@@ -1,11 +1,11 @@
 package zio.mock
 
-import zio.test.render._
 import zio.stacktracer.TracingImplicits.disableAutoTrace
+import zio.test._
 import zio.test.render.ExecutionResult.{ResultType, Status}
 import zio.test.render.LogLine.Fragment.Style
 import zio.test.render.LogLine.{Fragment, Line, Message}
-import zio.test._
+import zio.test.render._
 
 trait MockTestRenderer  extends TestRenderer {
   private val tabSize = 2

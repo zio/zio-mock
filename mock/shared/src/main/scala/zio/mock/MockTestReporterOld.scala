@@ -19,8 +19,8 @@ package zio.mock
 import zio.mock.Expectation
 import zio.mock.internal.{InvalidCall, MockException}
 import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.test._
 import zio.test.ExecutionEvent.{SectionEnd, SectionStart, Test}
+import zio.test._
 import zio.test.render.ExecutionResult.ResultType.Suite
 import zio.test.render.ExecutionResult.Status.{Failed, Ignored, Passed}
 import zio.test.render.ExecutionResult.{ResultType, Status}

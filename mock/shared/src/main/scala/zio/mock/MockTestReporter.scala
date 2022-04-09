@@ -18,13 +18,13 @@ package zio.mock
 
 import zio.stacktracer.TracingImplicits.disableAutoTrace
 import zio.test.ExecutionEvent.{SectionEnd, SectionStart, Test}
+import zio.test._
 import zio.test.render.ExecutionResult.ResultType.Suite
 import zio.test.render.ExecutionResult.Status.{Failed, Ignored, Passed}
 import zio.test.render.ExecutionResult.{ResultType, Status}
 import zio.test.render.LogLine.{Fragment, Line, Message}
 import zio.test.render._
 import zio.{Cause, _}
-import zio.test._
 
 import java.util.regex.Pattern
 import scala.annotation.tailrec
