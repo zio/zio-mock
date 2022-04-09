@@ -35,4 +35,3 @@ private[mock] object MockConsoleUtils {
   def ansi(ansiColor: String, s: String): String =
     ansiColor + s + SConsole.RESET
 }
-
