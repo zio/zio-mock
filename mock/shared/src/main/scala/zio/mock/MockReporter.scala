@@ -21,21 +21,20 @@ object MockReporter {
           trace: ZTraceElement
       ): ZIO[R, TestFailure[E], TestSuccess] =
         test
-          .catchSome(catchMockExceptions.unlift)
+          .catchAll {
+            case rt @ TestFailure.Runtime(_) =>
+              val mockExceptions = extractMockExceptions(rt)
+
+              if (mockExceptions.nonEmpty) handleMockException(mockExceptions: _*)
+              else ZIO.fail(rt)
+            case other                       => ZIO.fail(other)
+
+          }
           .catchSomeDefect { case me: MockException =>
             handleMockException(me)
           }
 
-      private val catchMockExceptions: TestFailure[_] => Option[ZIO[Any, TestFailure[Nothing], TestSuccess]] = {
-        case rt: TestFailure.Runtime[_] =>
-          val mockExceptions = extractMockExceptions(rt)
-
-          if (mockExceptions.nonEmpty) Some(handleMockException(mockExceptions: _*))
-          else Option.empty
-        case _: TestFailure[_]          => Option.empty
-      }
-
-      private def extractMockExceptions(rt: TestFailure.Runtime[_]) = {
+      private def extractMockExceptions(rt: TestFailure.Runtime[Any]) = {
 
         def extract(cause: Cause[Any], exceptions: Chunk[MockException]): Chunk[MockException] =
           cause match {
@@ -48,6 +47,7 @@ object MockReporter {
           }
 
         extract(rt.cause, Chunk.empty)
+
       }
 
       private def handleMockException[E](
