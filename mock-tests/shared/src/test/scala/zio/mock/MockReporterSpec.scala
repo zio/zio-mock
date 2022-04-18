@@ -194,8 +194,7 @@ object MockReporterSpec extends ZIOSpecDefault {
 
   override def spec = suite("MockReporterSpec")(
     behaviorSuite,
-    visualCheckSuite, // Remove `ignore` to view failures in all their colorful glory.
-    polySuite @@ MockReporter()
+    visualCheckSuite @@ ignore // Remove `ignore` to view failures in all their colorful glory.
   )
 
 }
