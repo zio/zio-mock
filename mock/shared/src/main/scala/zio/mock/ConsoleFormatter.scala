@@ -38,27 +38,25 @@ private[mock] object ConsoleFormatter {
 
     override def underlined(s: Any): String = s.toString
 
-    override def green(s: Any): String =  s.toString
+    override def green(s: Any): String = s.toString
 
-    override def yellow(s: Any): String =  s.toString
+    override def yellow(s: Any): String = s.toString
 
-    override def red(s: Any): String =  s.toString
+    override def red(s: Any): String = s.toString
 
-    override def blue(s: Any): String =  s.toString
+    override def blue(s: Any): String = s.toString
 
-    override def magenta(s: Any): String =  s.toString
+    override def magenta(s: Any): String = s.toString
 
-    override def cyan(s: Any): String =  s.toString
+    override def cyan(s: Any): String = s.toString
 
-    override def dim(s: Any): String =  s.toString
+    override def dim(s: Any): String = s.toString
 
-    override def bold(s: Any): String =  s.toString
+    override def bold(s: Any): String = s.toString
 
-    override def ansi(ansiColor: String, s: Any): String =  s.toString
+    override def ansi(ansiColor: String, s: Any): String = s.toString
 
-    override def white(s: Any): String =  s.toString
-
-
+    override def white(s: Any): String = s.toString
 
   }
 
@@ -95,7 +93,7 @@ private[mock] object ConsoleFormatter {
     def ansi(ansiColor: String, s: Any): String =
       ansiColor + s.toString + SConsole.RESET
 
-    def white(s: Any): String = 
+    def white(s: Any): String =
       SConsole.WHITE + s.toString + SConsole.RESET
   }
 
