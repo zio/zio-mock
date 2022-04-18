@@ -131,6 +131,19 @@ object MockReporterSpec extends ZIOSpecDefault {
           )
         )
       }
+    },
+    test("should not effect non-mock test failures.") {
+      val testSuite = test("I fail") {
+        assertTrue(false)
+      } @@ MockReporter()
+
+      executeSpec(testSuite).map { summary =>
+        assertTrue(
+          summary.fail == 1,
+          summary.total == 1
+        )
+      }
+
     }
   )
   val expectation   =
