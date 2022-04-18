@@ -167,7 +167,8 @@ object MockReporterSpec extends ZIOSpecDefault {
   val polySuite = suite("Polymorphic")(
     test("render polymorphic") {
       val expectation = PureModuleMock.PolyInput.of[String](equalTo("foo"), value("bar"))
-      ZIO.when(true)(PureModule.polyInput("baz")).as(assertTrue(true)).provide(expectation)
+
+      PureModule.polyInput("baz").as(assertTrue(true)).provideLayer(expectation.toLayer)
     } @@ TestAspects.withEnv(ZIO.succeed(ZEnvironment.empty))
   )
 
