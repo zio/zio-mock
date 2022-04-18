@@ -32,7 +32,7 @@ private[mock] trait ConsoleFormatter {
 
 private[mock] object ConsoleFormatter {
 
-  val bland = new ConsoleFormatter {
+  val bland: ConsoleFormatter = new ConsoleFormatter {
 
     override def reset(s: Any): String = s.toString
 
@@ -60,7 +60,7 @@ private[mock] object ConsoleFormatter {
 
   }
 
-  val colorful = new ConsoleFormatter {
+  val colorful: ConsoleFormatter = new ConsoleFormatter {
     def reset(s: Any): String = SConsole.RESET + s.toString()
 
     def underlined(s: Any): String =

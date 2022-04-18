@@ -1,8 +1,8 @@
 package zio.mock
 
 import zio._
-import zio.test._
 import zio.mock.internal._
+import zio.test._
 
 object MockReporter {
   import Expectation._
@@ -10,7 +10,9 @@ object MockReporter {
   import ExpectationState._
   import InvalidCall._
 
-  def apply[R0, E0, A](formatter: ConsoleFormatter = ConsoleFormatter.colorful) =
+  def apply[R0, E0, A](
+      formatter: ConsoleFormatter = ConsoleFormatter.colorful
+  ): TestAspect.PerTest[Nothing, R0, E0, Any] =
     new TestAspect.PerTest[Nothing, R0, E0, Any] {
       import formatter._
 
