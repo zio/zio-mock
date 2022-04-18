@@ -8,7 +8,7 @@ import java.io.IOException
 import zio.test._
 import testing._
 
-object EmptyMockSpec extends ZIOBaseSpec {
+object EmptyMockSpec extends MockSpecDefault {
 
   import Assertion._
   import MockException._
@@ -34,6 +34,6 @@ object EmptyMockSpec extends ZIOBaseSpec {
       }
     ) @@ TestAspects.withEnv(
       MockConsole.empty.build
-    )
+    ) 
   )
 }
