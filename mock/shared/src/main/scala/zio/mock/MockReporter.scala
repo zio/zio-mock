@@ -33,8 +33,6 @@ object MockReporter {
           .catchSomeDefect { case me: MockException =>
             handleMockException(me)
           }
-      // .tapDefect(d => Console.printLine(s"::: > Defect '${d}'").orDie)
-      // .tapError(e => Console.printLine(s"::: > Error '${e}'").orDie)
 
       private def handleMockException[E](
           e: MockException*
