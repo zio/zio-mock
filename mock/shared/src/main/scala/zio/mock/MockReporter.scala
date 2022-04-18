@@ -1,9 +1,9 @@
 package zio.mock
 
+import zio.Cause._
 import zio._
 import zio.mock.internal._
 import zio.test._
-import zio.Cause._
 
 object MockReporter {
   import Expectation._
