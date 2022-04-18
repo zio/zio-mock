@@ -34,6 +34,6 @@ object EmptyMockSpec extends MockSpecDefault {
       }
     ) @@ TestAspects.withEnv(
       MockConsole.empty.build
-    ) 
+    )
   )
 }
