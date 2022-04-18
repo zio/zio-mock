@@ -8,7 +8,7 @@ import java.io.IOException
 import zio.test._
 import testing._
 
-object EmptyMockSpec extends ZIOBaseSpec {
+object EmptyMockSpec extends MockSpecDefault {
 
   import Assertion._
   import MockException._

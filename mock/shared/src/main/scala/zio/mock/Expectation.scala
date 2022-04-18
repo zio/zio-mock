@@ -281,7 +281,7 @@ object Expectation {
   private[mock] object Repeated {
 
     def apply[R: EnvironmentTag](child: Expectation[R], range: Range): Repeated[R] =
-      if (range.step <= 0) throw MockException.InvalidRangeException(range)
+      if (range.step <= 0) throw new IllegalArgumentException(range.toString())
       else Repeated(child, range, if (range.start == 0) Satisfied else Unsatisfied, List.empty, 0, 0)
   }
 

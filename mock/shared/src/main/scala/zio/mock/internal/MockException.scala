@@ -34,10 +34,6 @@ object MockException {
       args: Any
   ) extends MockException
 
-  final case class InvalidRangeException(
-      range: Range
-  ) extends MockException
-
   final case class InvalidCallException(
       failedMatches: List[InvalidCall]
   ) extends MockException

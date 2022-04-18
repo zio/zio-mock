@@ -66,5 +66,5 @@ object ComposedEmptyMockSpec extends ZIOBaseSpec {
         (MockClock.empty ++ MockConsole.empty).build
       )
     )
-  )
+  ) @@ MockReporter()
 }

@@ -1,17 +1,11 @@
 package zio.mock
 
-import zio._
-import zio.internal.stacktracer.Tracer
-import zio.internal.stacktracer.Tracer.{instance, newTrace}
-import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.test._
+import zio.test.{TestAspectAtLeastR, TestEnvironment, ZIOSpecDefault}
+import zio.{Chunk, ZIOAppArgs}
 
-abstract class MockSpecDefault extends MockSpec[TestEnvironment] {
+abstract class MockSpecDefault extends ZIOSpecDefault {
 
-  override val layer: ZLayer[ZIOAppArgs with Scope, Any, TestEnvironment] = {
-    implicit val trace: zio.ZTraceElement = Tracer.newTrace
-    zio.ZEnv.live >>> TestEnvironment.live
-  }
+  override def aspects: Chunk[TestAspectAtLeastR[Environment with TestEnvironment with ZIOAppArgs]] =
+    super.aspects :+ MockReporter()
 
-  def spec: ZSpec[TestEnvironment, Any]
 }
