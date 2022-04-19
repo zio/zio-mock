@@ -1,5 +1,6 @@
 package zio.mock
 
+import zio.Cause._
 import zio._
 import zio.mock.internal._
 import zio.test._
@@ -20,21 +21,34 @@ object MockReporter {
           trace: ZTraceElement
       ): ZIO[R, TestFailure[E], TestSuccess] =
         test
-          .catchSome {
-            case TestFailure.Runtime(Cause.Die(me: MockException, _)) =>
-              handleMockException(me)
-            case TestFailure.Runtime(
-                  Cause.Then(Cause.Die(me: MockException, _), rightCause @ Cause.Die(rme: MockException, _))
-                ) =>
-              Console.printLine(s"::: [HANDLING & INSPECT]> Right cause '${rightCause}'").orDie *> handleMockException(
-                me
-              )
+          .catchAll {
+            case rt @ TestFailure.Runtime(_) =>
+              val mockExceptions = extractMockExceptions(rt)
 
-              handleMockException(me, rme)
+              if (mockExceptions.nonEmpty) handleMockException(mockExceptions: _*)
+              else ZIO.fail(rt)
+            case other                       => ZIO.fail(other)
+
           }
           .catchSomeDefect { case me: MockException =>
             handleMockException(me)
           }
+
+      private def extractMockExceptions(rt: TestFailure.Runtime[Any]) = {
+
+        def extract(cause: Cause[Any], exceptions: Chunk[MockException]): Chunk[MockException] =
+          cause match {
+            case Die(me: MockException, trace)  => exceptions :+ me
+            case Then(left, right)              => extract(right, extract(left, exceptions))
+            case Fail(me: MockException, trace) => exceptions :+ me
+            case Stackless(cause, stackless)    => extract(cause, exceptions)
+            case Both(left, right)              => extract(right, extract(left, exceptions))
+            case _                              => exceptions
+          }
+
+        extract(rt.cause, Chunk.empty)
+
+      }
 
       private def handleMockException[E](
           e: MockException*
@@ -44,7 +58,7 @@ object MockReporter {
             case MockException.UnexpectedCallException(capability, args)     =>
               val mock = capability.mock
 
-              s"${white("that there should have been no calls to the mock")} ${renderMock(mock)}.  However ${renderCapability(capability, Some(Right(args)))} was called unexpectedly."
+              s"${reset("that there should have been no calls to the mock")} ${renderMock(mock)}.  However ${renderCapability(capability, Some(Right(args)))} was called unexpectedly."
             case MockException.UnsatisfiedExpectationsException(expectation) =>
               reset(renderExpectation(expectation))
             case MockException.InvalidCallException(failedMatches)           =>
@@ -52,7 +66,6 @@ object MockReporter {
           }
 
         ZIO.fail(makeTestFailure(e.map(makeMessages)))
-
       }
 
       private def makeTestFailure(messages: Seq[String]) = {
