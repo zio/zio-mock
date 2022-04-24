@@ -51,8 +51,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             ImpureModule.singleParam(1),
             equalTo("foo 1")
           ),
-          testValue("returns valueM")(
-            ImpureModuleMock.SingleParam(equalTo(1), valueM(i => UIO.succeed(s"foo $i"))),
+          testValue("returns valueZIO")(
+            ImpureModuleMock.SingleParam(equalTo(1), valueZIO(i => UIO.succeed(s"foo $i"))),
             ImpureModule.singleParam(1),
             equalTo("foo 1")
           ),
@@ -66,8 +66,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             ImpureModule.singleParam(1),
             isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo 1")))
           ),
-          testDied("returns failureM")(
-            ImpureModuleMock.SingleParam(equalTo(1), failureM(i => IO.fail(new Exception(s"foo $i")))),
+          testDied("returns failureZIO")(
+            ImpureModuleMock.SingleParam(equalTo(1), failureZIO(i => IO.fail(new Exception(s"foo $i")))),
             ImpureModule.singleParam(1),
             isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo 1")))
           )
@@ -83,8 +83,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             ImpureModule.manyParams(1, "2", 3L),
             equalTo("foo (1,2,3)")
           ),
-          testValue("returns valueM")(
-            ImpureModuleMock.ManyParams(equalTo((1, "2", 3L)), valueM(i => UIO.succeed(s"foo $i"))),
+          testValue("returns valueZIO")(
+            ImpureModuleMock.ManyParams(equalTo((1, "2", 3L)), valueZIO(i => UIO.succeed(s"foo $i"))),
             ImpureModule.manyParams(1, "2", 3L),
             equalTo("foo (1,2,3)")
           ),
@@ -98,8 +98,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             ImpureModule.manyParams(1, "2", 3L),
             isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo (1,2,3)")))
           ),
-          testDied("returns failureM")(
-            ImpureModuleMock.ManyParams(equalTo((1, "2", 3L)), failureM(i => IO.fail(new Exception(s"foo $i")))),
+          testDied("returns failureZIO")(
+            ImpureModuleMock.ManyParams(equalTo((1, "2", 3L)), failureZIO(i => IO.fail(new Exception(s"foo $i")))),
             ImpureModule.manyParams(1, "2", 3L),
             isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo (1,2,3)")))
           )
@@ -115,8 +115,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             ImpureModule.manyParamLists(1)("2")(3L),
             equalTo("foo (1,2,3)")
           ),
-          testValue("returns valueM")(
-            ImpureModuleMock.ManyParamLists(equalTo((1, "2", 3L)), valueM(i => UIO.succeed(s"foo $i"))),
+          testValue("returns valueZIO")(
+            ImpureModuleMock.ManyParamLists(equalTo((1, "2", 3L)), valueZIO(i => UIO.succeed(s"foo $i"))),
             ImpureModule.manyParamLists(1)("2")(3L),
             equalTo("foo (1,2,3)")
           ),
@@ -130,8 +130,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             ImpureModule.manyParamLists(1)("2")(3L),
             isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo (1,2,3)")))
           ),
-          testDied("returns failureM")(
-            ImpureModuleMock.ManyParamLists(equalTo((1, "2", 3L)), failureM(i => IO.fail(new Exception(s"foo $i")))),
+          testDied("returns failureZIO")(
+            ImpureModuleMock.ManyParamLists(equalTo((1, "2", 3L)), failureZIO(i => IO.fail(new Exception(s"foo $i")))),
             ImpureModule.manyParamLists(1)("2")(3L),
             isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo (1,2,3)")))
           )
@@ -162,8 +162,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
               ImpureModule.overloaded(1),
               equalTo("foo 1")
             ),
-            testValue("returns valueM")(
-              ImpureModuleMock.Overloaded._0(equalTo(1), valueM(i => UIO.succeed(s"foo $i"))),
+            testValue("returns valueZIO")(
+              ImpureModuleMock.Overloaded._0(equalTo(1), valueZIO(i => UIO.succeed(s"foo $i"))),
               ImpureModule.overloaded(1),
               equalTo("foo 1")
             ),
@@ -177,8 +177,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
               ImpureModule.overloaded(1),
               isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo 1")))
             ),
-            testDied("returns failureM")(
-              ImpureModuleMock.Overloaded._0(equalTo(1), failureM(i => IO.fail(new Exception(s"foo $i")))),
+            testDied("returns failureZIO")(
+              ImpureModuleMock.Overloaded._0(equalTo(1), failureZIO(i => IO.fail(new Exception(s"foo $i")))),
               ImpureModule.overloaded(1),
               isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo 1")))
             )
@@ -194,8 +194,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
               ImpureModule.overloaded(1L),
               equalTo("foo 1")
             ),
-            testValue("returns valueM")(
-              ImpureModuleMock.Overloaded._1(equalTo(1L), valueM(i => UIO.succeed(s"foo $i"))),
+            testValue("returns valueZIO")(
+              ImpureModuleMock.Overloaded._1(equalTo(1L), valueZIO(i => UIO.succeed(s"foo $i"))),
               ImpureModule.overloaded(1L),
               equalTo("foo 1")
             ),
@@ -209,8 +209,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
               ImpureModule.overloaded(1L),
               isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo 1")))
             ),
-            testDied("returns failureM")(
-              ImpureModuleMock.Overloaded._1(equalTo(1L), failureM(i => IO.fail(new Exception(s"foo $i")))),
+            testDied("returns failureZIO")(
+              ImpureModuleMock.Overloaded._1(equalTo(1L), failureZIO(i => IO.fail(new Exception(s"foo $i")))),
               ImpureModule.overloaded(1L),
               isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo 1")))
             )
@@ -232,10 +232,10 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             ImpureModule.varargs(1, "2", "3"),
             equalTo("foo 1, [2, 3]")
           ),
-          testValue("returns valueM")(
+          testValue("returns valueZIO")(
             ImpureModuleMock.Varargs(
               equalTo((1, Seq("2", "3"))),
-              valueM { case (a, b) =>
+              valueZIO { case (a, b) =>
                 UIO.succeed(s"foo $a, [${b.mkString(", ")}]")
               }
             ),
@@ -257,10 +257,10 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             ImpureModule.varargs(1, "2", "3"),
             isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo 1, [2, 3]")))
           ),
-          testDied("returns failureM")(
+          testDied("returns failureZIO")(
             ImpureModuleMock.Varargs(
               equalTo((1, Seq("2", "3"))),
-              failureM { case (a, b) =>
+              failureZIO { case (a, b) =>
                 IO.fail(new Exception(s"foo $a, [${b.mkString(", ")}]"))
               }
             ),
@@ -284,10 +284,10 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             ImpureModule.curriedVarargs(1, "2", "3")(4L, '5', '6'),
             equalTo("foo 1, [2, 3], 4, [5, 6]")
           ),
-          testValue("returns valueM")(
+          testValue("returns valueZIO")(
             ImpureModuleMock.CurriedVarargs(
               equalTo((1, Seq("2", "3"), 4L, Seq('5', '6'))),
-              valueM { case (a, b, c, d) =>
+              valueZIO { case (a, b, c, d) =>
                 UIO.succeed(s"foo $a, [${b.mkString(", ")}], $c, [${d.mkString(", ")}]")
               }
             ),
@@ -312,10 +312,10 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
               hasField("message", _.getMessage, equalTo("foo 1, [2, 3], 4, [5, 6]"))
             )
           ),
-          testDied("returns failureM")(
+          testDied("returns failureZIO")(
             ImpureModuleMock.CurriedVarargs(
               equalTo((1, Seq("2", "3"), 4L, Seq('5', '6'))),
-              failureM { case (a, b, c, d) =>
+              failureZIO { case (a, b, c, d) =>
                 IO.fail(new Exception(s"foo $a, [${b.mkString(", ")}], $c, [${d.mkString(", ")}]"))
               }
             ),
@@ -334,8 +334,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             ImpureModule.byName(1),
             equalTo("foo 1")
           ),
-          testValue("returns valueM")(
-            ImpureModuleMock.ByName(equalTo(1), valueM(i => UIO.succeed(s"foo $i"))),
+          testValue("returns valueZIO")(
+            ImpureModuleMock.ByName(equalTo(1), valueZIO(i => UIO.succeed(s"foo $i"))),
             ImpureModule.byName(1),
             equalTo("foo 1")
           ),
@@ -349,8 +349,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             ImpureModule.byName(1),
             isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo 1")))
           ),
-          testDied("returns failureM")(
-            ImpureModuleMock.ByName(equalTo(1), failureM(i => IO.fail(new Exception(s"foo $i")))),
+          testDied("returns failureZIO")(
+            ImpureModuleMock.ByName(equalTo(1), failureZIO(i => IO.fail(new Exception(s"foo $i")))),
             ImpureModule.byName(1),
             isSubtype[Exception](hasField("message", _.getMessage, equalTo("foo 1")))
           )
@@ -366,8 +366,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
             (ImpureModule.maxParams _).tupled(intTuple22),
             equalTo("foo (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)")
           ),
-          testValue("returns valueM")(
-            ImpureModuleMock.MaxParams(equalTo(intTuple22), valueM(i => UIO.succeed(s"foo $i"))),
+          testValue("returns valueZIO")(
+            ImpureModuleMock.MaxParams(equalTo(intTuple22), valueZIO(i => UIO.succeed(s"foo $i"))),
             (ImpureModule.maxParams _).tupled(intTuple22),
             equalTo("foo (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)")
           ),
@@ -387,8 +387,8 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
               )
             )
           ),
-          testDied("returns failureM")(
-            ImpureModuleMock.MaxParams(equalTo(intTuple22), failureM(i => IO.fail(new Exception(s"foo $i")))),
+          testDied("returns failureZIO")(
+            ImpureModuleMock.MaxParams(equalTo(intTuple22), failureZIO(i => IO.fail(new Exception(s"foo $i")))),
             (ImpureModule.maxParams _).tupled(intTuple22),
             isSubtype[Exception](
               hasField(
