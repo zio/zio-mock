@@ -313,11 +313,11 @@ object Expectation {
 
   /** Effectfully maps the input arguments `I` to expectation result failing with `E`.
     */
-  def failureM[I, E](f: I => IO[E, Nothing])(implicit trace: ZTraceElement): Fail[I, E] = Fail(f)
+  def failureZIO[I, E](f: I => IO[E, Nothing])(implicit trace: ZTraceElement): Fail[I, E] = Fail(f)
 
   /** Expectation result computing forever.
     */
-  def never(implicit trace: ZTraceElement): Succeed[Any, Nothing] = valueM(_ => IO.never)
+  def never(implicit trace: ZTraceElement): Succeed[Any, Nothing] = valueZIO(_ => IO.never)
 
   /** Expectation result succeeding with `Unit`.
     */
@@ -333,7 +333,7 @@ object Expectation {
 
   /** Effectfully maps the input arguments `I` expectation result succeeding with `A`.
     */
-  def valueM[I, A](f: I => IO[Nothing, A]): Succeed[I, A] = Succeed(f)
+  def valueZIO[I, A](f: I => IO[Nothing, A]): Succeed[I, A] = Succeed(f)
 
   /** Implicitly converts Expectation to ZLayer mock environment.
     */
