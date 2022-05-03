@@ -1,9 +1,9 @@
 package zio.mock
 
+import zio.ZIO
 import zio.mock.internal.{ExpectationState, InvalidCall, MockException}
 import zio.mock.module.{ImpureModule, ImpureModuleMock}
-import zio.test.{Assertion, Spec, TestFailure, TestSuccess}
-import zio.{IO, UIO, ZIO}
+import zio.test.{Assertion, Spec}
 
 object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] {
 

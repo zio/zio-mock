@@ -2,14 +2,13 @@ package zio.mock
 
 import zio.mock.internal.{InvalidCall, MockException}
 import zio.mock.module.{ImpureModule, ImpureModuleMock}
-import zio.test.{Assertion, Spec, TestFailure, TestSuccess}
+import zio.test.{Assertion, Spec}
 import zio.{URIO, ZIO}
 
 object AdvancedMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] {
 
   import Assertion._
   import Expectation._
-  import InvalidCall._
   import MockException._
 
   val cmdA = ImpureModuleMock.SingleParam

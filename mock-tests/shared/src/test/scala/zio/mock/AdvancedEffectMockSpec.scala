@@ -3,13 +3,12 @@ package zio.mock
 import zio.ZIO
 import zio.mock.internal.{InvalidCall, MockException}
 import zio.mock.module.{PureModule, PureModuleMock}
-import zio.test.{Assertion, Spec, TestFailure, TestSuccess}
+import zio.test.{Assertion, Spec}
 
 object AdvancedEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
 
   import Assertion._
   import Expectation._
-  import InvalidCall._
   import MockException._
 
   val cmdA = PureModuleMock.SingleParam
