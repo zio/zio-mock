@@ -18,7 +18,7 @@ package zio.mock
 
 import zio.internal.stacktracer.Tracer
 import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.{IO, System, UIO, URLayer, ZIO, ZLayer, Trace}
+import zio.{IO, System, Trace, UIO, URLayer, ZIO, ZLayer}
 
 object MockSystem extends Mock[System] {
 

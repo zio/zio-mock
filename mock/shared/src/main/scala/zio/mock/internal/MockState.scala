@@ -18,7 +18,7 @@ package zio.mock.internal
 
 import zio.mock.Expectation
 import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.{Ref, UIO, ZIO, Trace}
+import zio.{Ref, Trace, UIO, ZIO}
 
 /** A `MockState[R]` represents the state of a mock.
   */

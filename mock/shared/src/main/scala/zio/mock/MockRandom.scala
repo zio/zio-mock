@@ -18,7 +18,7 @@ package zio.mock
 
 import zio.internal.stacktracer.Tracer
 import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.{Chunk, Random, UIO, URLayer, ZIO, ZLayer, Trace}
+import zio.{Chunk, Random, Trace, UIO, URLayer, ZIO, ZLayer}
 
 import java.util.UUID
 

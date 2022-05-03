@@ -18,7 +18,7 @@ package zio.mock
 
 import zio.internal.stacktracer.Tracer
 import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.{Console, IO, URLayer, ZIO, ZLayer, Trace}
+import zio.{Console, IO, Trace, URLayer, ZIO, ZLayer}
 
 import java.io.IOException
 

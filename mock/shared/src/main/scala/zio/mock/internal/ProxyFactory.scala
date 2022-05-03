@@ -19,7 +19,7 @@ package zio.mock.internal
 import zio.mock.{Capability, Expectation, Proxy}
 import zio.stacktracer.TracingImplicits.disableAutoTrace
 import zio.test.Assertion
-import zio.{EnvironmentTag, IO, ULayer, ZIO, ZLayer, Trace}
+import zio.{EnvironmentTag, IO, Trace, ULayer, ZIO, ZLayer}
 
 import scala.annotation.tailrec
 import scala.util.Try
