@@ -18,7 +18,7 @@ package zio.mock
 
 import zio.internal.stacktracer.Tracer
 import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.{Console, IO, URLayer, ZIO, ZLayer, ZTraceElement}
+import zio.{Console, IO, URLayer, ZIO, ZLayer, Trace}
 
 import java.io.IOException
 
@@ -37,12 +37,12 @@ object MockConsole extends Mock[Console] {
         .service[Proxy]
         .map(proxy =>
           new Console {
-            def print(line: => Any)(implicit trace: ZTraceElement): IO[IOException, Unit]          = proxy(Print, line)
-            def printError(line: => Any)(implicit trace: ZTraceElement): IO[IOException, Unit]     = proxy(PrintError, line)
-            def printLine(line: => Any)(implicit trace: ZTraceElement): IO[IOException, Unit]      = proxy(PrintLine, line)
-            def printLineError(line: => Any)(implicit trace: ZTraceElement): IO[IOException, Unit] =
+            def print(line: => Any)(implicit trace: Trace): IO[IOException, Unit]          = proxy(Print, line)
+            def printError(line: => Any)(implicit trace: Trace): IO[IOException, Unit]     = proxy(PrintError, line)
+            def printLine(line: => Any)(implicit trace: Trace): IO[IOException, Unit]      = proxy(PrintLine, line)
+            def printLineError(line: => Any)(implicit trace: Trace): IO[IOException, Unit] =
               proxy(PrintLineError, line)
-            def readLine(implicit trace: ZTraceElement): IO[IOException, String]                   = proxy(ReadLine)
+            def readLine(implicit trace: Trace): IO[IOException, String]                   = proxy(ReadLine)
           }
         )
     )

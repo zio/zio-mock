@@ -53,7 +53,7 @@ object AdvancedEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule]
   def hasUnsatisfiedExpectations: Assertion[Throwable] =
     isSubtype[UnsatisfiedExpectationsException[PureModule]](anything)
 
-  def spec: Spec[Any, TestFailure[Any], TestSuccess] = suite("AdvancedEffectMockSpec")(
+  def spec: Spec[Any, Any] = suite("AdvancedEffectMockSpec")(
     suite("expectations composition")(
       suite("A and B")(
         testValue("A->B passes")(A && B, a *> b, equalTo("B")),

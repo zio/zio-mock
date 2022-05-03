@@ -18,7 +18,7 @@ package zio.mock.internal
 
 import zio.mock.Expectation
 import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.{Ref, UIO, ZIO, ZTraceElement}
+import zio.{Ref, UIO, ZIO, Trace}
 
 /** A `MockState[R]` represents the state of a mock.
   */
@@ -29,13 +29,13 @@ private[mock] final case class MockState[R](
 
 private[mock] object MockState {
 
-  def make[R](trunk: Expectation[R])(implicit trace: ZTraceElement): UIO[MockState[R]] =
+  def make[R](trunk: Expectation[R])(implicit trace: Trace): UIO[MockState[R]] =
     for {
       expectationRef <- Ref.make[Expectation[R]](trunk)
       callsCountRef  <- Ref.make[Int](0)
     } yield MockState[R](expectationRef, callsCountRef)
 
-  def checkUnmetExpectations[R](state: MockState[R])(implicit trace: ZTraceElement): ZIO[Any, Nothing, Any] =
+  def checkUnmetExpectations[R](state: MockState[R])(implicit trace: Trace): ZIO[Any, Nothing, Any] =
     state.expectationRef.get
       .filterOrElseWith[Any, Nothing, Any](_.state >= ExpectationState.Satisfied) { expectation =>
         ZIO.die(MockException.UnsatisfiedExpectationsException(expectation))

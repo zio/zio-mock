@@ -18,7 +18,7 @@ package zio.mock
 
 import zio.internal.stacktracer.Tracer
 import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.{IO, System, UIO, URLayer, ZIO, ZLayer, ZTraceElement}
+import zio.{IO, System, UIO, URLayer, ZIO, ZLayer, Trace}
 
 object MockSystem extends Mock[System] {
 
@@ -39,28 +39,28 @@ object MockSystem extends Mock[System] {
         .service[Proxy]
         .map(proxy =>
           new System {
-            def env(variable: => String)(implicit trace: ZTraceElement): IO[SecurityException, Option[String]]        =
+            def env(variable: => String)(implicit trace: Trace): IO[SecurityException, Option[String]]        =
               proxy(Env, variable)
             def envOrElse(variable: => String, alt: => String)(implicit
-                trace: ZTraceElement
+                trace: Trace
             ): IO[SecurityException, String] =
               proxy(EnvOrElse, variable, alt)
             def envOrOption(variable: => String, alt: => Option[String])(implicit
-                trace: ZTraceElement
+                trace: Trace
             ): IO[SecurityException, Option[String]] =
               proxy(EnvOrOption, variable, alt)
-            def envs(implicit trace: ZTraceElement): IO[SecurityException, Map[String, String]]                       =
+            def envs(implicit trace: Trace): IO[SecurityException, Map[String, String]]                       =
               proxy(Envs)
-            def lineSeparator(implicit trace: ZTraceElement): UIO[String]                                             =
+            def lineSeparator(implicit trace: Trace): UIO[String]                                             =
               proxy(LineSeparator)
-            def properties(implicit trace: ZTraceElement): IO[Throwable, Map[String, String]]                         =
+            def properties(implicit trace: Trace): IO[Throwable, Map[String, String]]                         =
               proxy(Properties)
-            def property(prop: => String)(implicit trace: ZTraceElement): IO[Throwable, Option[String]]               =
+            def property(prop: => String)(implicit trace: Trace): IO[Throwable, Option[String]]               =
               proxy(Property, prop)
-            def propertyOrElse(prop: => String, alt: => String)(implicit trace: ZTraceElement): IO[Throwable, String] =
+            def propertyOrElse(prop: => String, alt: => String)(implicit trace: Trace): IO[Throwable, String] =
               proxy(PropertyOrElse, prop, alt)
             def propertyOrOption(prop: => String, alt: => Option[String])(implicit
-                trace: ZTraceElement
+                trace: Trace
             ): IO[Throwable, Option[String]] =
               proxy(PropertyOrOption, prop, alt)
 

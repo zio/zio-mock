@@ -7,7 +7,6 @@ import zio.test._
 
 object MockReporter {
   import Expectation._
-  import AssertionM.Render._
   import ExpectationState._
   import InvalidCall._
 
@@ -18,16 +17,16 @@ object MockReporter {
       import formatter._
 
       def perTest[R <: R0, E >: E0](test: ZIO[R, TestFailure[E], TestSuccess])(implicit
-          trace: ZTraceElement
+          trace: Trace
       ): ZIO[R, TestFailure[E], TestSuccess] =
         test
           .catchAll {
-            case rt @ TestFailure.Runtime(_) =>
+            case rt: TestFailure.Runtime[E] =>
               val mockExceptions = extractMockExceptions(rt)
 
               if (mockExceptions.nonEmpty) handleMockException(mockExceptions: _*)
               else ZIO.fail(rt)
-            case other                       => ZIO.fail(other)
+            case other                      => ZIO.fail(other)
 
           }
           .catchSomeDefect { case me: MockException =>
@@ -72,7 +71,7 @@ object MockReporter {
 
         val ass = Assertion.assertion[Any](
           messages.mkString(" " + prefix(ExpectationState.Unsatisfied))
-        )()(_ => false)
+        )(_ => false)
         TestFailure.Assertion(assert("Your test case")(ass))
       }
 

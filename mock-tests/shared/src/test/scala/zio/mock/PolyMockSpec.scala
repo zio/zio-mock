@@ -12,7 +12,7 @@ object PolyMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
   import MockException._
   import TestAspect.exceptScala3
 
-  def spec: Spec[Annotations, TestFailure[Any], TestSuccess] = suite("PolyMockSpec")(
+  def spec: Spec[Annotations, Any] = suite("PolyMockSpec")(
     suite("polymorphic input")(
       suite("expectations met")(
         testValue("String")(

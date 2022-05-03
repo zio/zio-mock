@@ -43,7 +43,7 @@ object MockableSpec extends ZIOSpecDefault {
         })(anything)
       },
       test("fails when applied to object without type arg") {
-        assertM(typeCheck {
+        assertZIO(typeCheck {
           """
             @mockable
             object ModuleMock
@@ -51,7 +51,7 @@ object MockableSpec extends ZIOSpecDefault {
         })(isLeft(anything))
       },
       test("fails when applied to trait") {
-        assertM(typeCheck {
+        assertZIO(typeCheck {
           """
             object Module {
               trait Service
@@ -63,7 +63,7 @@ object MockableSpec extends ZIOSpecDefault {
         })(isLeft(anything))
       },
       test("fails when applied to class") {
-        assertM(typeCheck {
+        assertZIO(typeCheck {
           """
             object Module {
               trait Service

@@ -23,14 +23,27 @@ package object testing {
     def print(executionEvent: ExecutionEvent): ZIO[Any, Nothing, Unit] = ZIO.unit
   }
 
-  def executeSpec[E](spec: ZSpec[Any with Scope, E], showSpecOutput: Boolean = false) = {
+  def executeSpec[E](spec: Spec[Scope, E], showSpecOutput: Boolean = false) = {
+    // environment1: ZEnvironment[ZIOAppArgs with Scope] = castedRuntime.environment
+    // sharedLayer: ZLayer[Any, Nothing, Environment with ExecutionEventSink] =
+    //   ZLayer.succeedEnvironment(castedRuntime.environment)
+
     val testOutput = if (showSpecOutput) TestOutput.live else ZLayer.succeed(SilentTestOutput)
+    val layer0     = testEnvironment ++ Scope.default ++ ZIOAppArgs.empty
+    val layer1     = (Console.live >>> TestLogger.fromConsole(
+      Console.ConsoleLive
+    ) >>> ExecutionEventPrinter.live >>> testOutput >>> ExecutionEventSink.live)
+
+    // perTestLayer = (ZLayer.succeedEnvironment(environment1) ++ ZEnv.live) >>> (TestEnvironment.live ++ ZLayer
+    //                  .environment[Scope] ++ ZLayer.environment[ZIOAppArgs])
+    // executionEventSinkLayer = sharedLayer
+
     TestExecutor
       .default(
-        testEnvironment ++ Scope.default,
-        (Console.live >>> TestLogger.fromConsole(
-          Console.ConsoleLive
-        ) >>> ExecutionEventPrinter.live >>> testOutput >>> ExecutionEventSink.live)
+        layer0,
+        layer0,
+        layer1,
+        _ => ZIO.unit
       )
       .run(spec, ExecutionStrategy.Sequential)
   }

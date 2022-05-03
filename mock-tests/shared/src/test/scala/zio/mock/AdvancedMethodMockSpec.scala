@@ -53,7 +53,7 @@ object AdvancedMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModul
   def hasUnsatisfiedExpectations: Assertion[Throwable] =
     isSubtype[UnsatisfiedExpectationsException[ImpureModule]](anything)
 
-  def spec: Spec[Any, TestFailure[Any], TestSuccess] =
+  def spec: Spec[Any, Any] =
     suite("AdvancedMethodMockSpec")(
       suite("expectations composition")(
         suite("A and B")(
