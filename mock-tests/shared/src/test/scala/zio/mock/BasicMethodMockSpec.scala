@@ -4,6 +4,7 @@ import zio.ZIO
 import zio.mock.internal.{ExpectationState, InvalidCall, MockException}
 import zio.mock.module.{ImpureModule, ImpureModuleMock}
 import zio.test.{Assertion, Spec}
+import TestAssertions._
 
 object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] {
 
@@ -416,12 +417,12 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
         testDied("invalid arguments")(
           ImpureModuleMock.ParameterizedCommand(equalTo(1)),
           ImpureModule.parameterizedCommand(2),
-          equalTo(InvalidCallException(List(InvalidArguments(ImpureModuleMock.ParameterizedCommand, 2, equalTo(1)))))
+          kindaEqualTo(InvalidCallException(List(InvalidArguments(ImpureModuleMock.ParameterizedCommand, 2, equalTo(1)))))
         ),
         testDied("invalid method")(
           ImpureModuleMock.ParameterizedCommand(equalTo(1)),
           ImpureModule.singleParam(1),
-          equalTo(
+          kindaEqualTo(
             InvalidCallException(
               List(InvalidCapability(ImpureModuleMock.SingleParam, ImpureModuleMock.ParameterizedCommand, equalTo(1)))
             )

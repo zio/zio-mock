@@ -14,7 +14,7 @@ trait MockSpecUtils[R] {
       mock: ULayer[R],
       app: ZIO[R, E, A],
       check: Assertion[A]
-  ): Spec[Any, E] = test(name) {
+  )(implicit trace: Trace): Spec[Any, E] = test(name) {
     val result = ZIO.scoped[Any](mock.build.flatMap(app.provideEnvironment(_)))
     assertZIO(result)(check)
   }
@@ -23,7 +23,7 @@ trait MockSpecUtils[R] {
       mock: ULayer[R],
       app: ZIO[R, E, A],
       check: Assertion[E]
-  ): Spec[Any, A] = test(name) {
+  )(implicit trace: Trace): Spec[Any, A] = test(name) {
     val result = ZIO.scoped[Any](mock.build.flatMap(app.flip.provideEnvironment(_)))
     assertZIO(result)(check)
   }
@@ -32,7 +32,7 @@ trait MockSpecUtils[R] {
       mock: ULayer[R],
       app: ZIO[R, E, A],
       check: Assertion[Option[A]]
-  ): Spec[Live, E] = test(name) {
+  )(implicit trace: Trace): Spec[Live, E] = test(name) {
     val result =
       Live.live {
         ZIO
@@ -49,7 +49,7 @@ trait MockSpecUtils[R] {
       mock: ULayer[R],
       app: ZIO[R, E, A],
       check: Assertion[Throwable]
-  ): Spec[Any, Any] = test(name) {
+  )(implicit trace: Trace): Spec[Any, Any] = test(name) {
 
     val result: IO[Any, Throwable] =
       swapFailure(

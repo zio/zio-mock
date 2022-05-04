@@ -4,6 +4,7 @@ import zio._
 import zio.mock.internal.{ExpectationState, InvalidCall, MockException}
 import zio.mock.module.{PureModule, PureModuleMock}
 import zio.test.{Assertion, Live, Spec}
+import TestAssertions._
 
 object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
 
@@ -415,12 +416,12 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
       testDied("invalid arguments")(
         PureModuleMock.ParameterizedCommand(equalTo(1)),
         PureModule.parameterizedCommand(2),
-        equalTo(InvalidCallException(List(InvalidArguments(PureModuleMock.ParameterizedCommand, 2, equalTo(1)))))
+        kindaEqualTo(InvalidCallException(List(InvalidArguments(PureModuleMock.ParameterizedCommand, 2, equalTo(1)))))
       ),
       testDied("invalid method")(
         PureModuleMock.ParameterizedCommand(equalTo(1)),
         PureModule.singleParam(1),
-        equalTo(
+        kindaEqualTo(
           InvalidCallException(
             List(InvalidCapability(PureModuleMock.SingleParam, PureModuleMock.ParameterizedCommand, equalTo(1)))
           )
