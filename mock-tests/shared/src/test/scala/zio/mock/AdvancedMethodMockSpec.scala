@@ -1,5 +1,6 @@
 package zio.mock
 
+import zio.mock.internal.InvalidCall.InvalidCapability
 import zio.mock.internal.{InvalidCall, MockException}
 import zio.mock.module.{ImpureModule, ImpureModuleMock}
 import zio.test.{Assertion, Spec}

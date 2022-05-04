@@ -1,6 +1,7 @@
 package zio.mock
 
 import zio.ZIO
+import zio.mock.internal.InvalidCall.InvalidCapability
 import zio.mock.internal.{InvalidCall, MockException}
 import zio.mock.module.{PureModule, PureModuleMock}
 import zio.test.{Assertion, Spec}
