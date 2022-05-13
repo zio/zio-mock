@@ -2,7 +2,7 @@ package zio.mock
 
 import zio._
 import zio.mock.module.T22
-import zio.test.{Assertion, Live, ZSpec, assertM, test}
+import zio.test.{Assertion, Live, Spec, assertZIO, test}
 import testing._
 
 trait MockSpecUtils[R] {
@@ -14,25 +14,25 @@ trait MockSpecUtils[R] {
       mock: ULayer[R],
       app: ZIO[R, E, A],
       check: Assertion[A]
-  ): ZSpec[Any, E] = test(name) {
+  )(implicit trace: Trace): Spec[Any, E] = test(name) {
     val result = ZIO.scoped[Any](mock.build.flatMap(app.provideEnvironment(_)))
-    assertM(result)(check)
+    assertZIO(result)(check)
   }
 
   private[mock] def testError[E, A](name: String)(
       mock: ULayer[R],
       app: ZIO[R, E, A],
       check: Assertion[E]
-  ): ZSpec[Any, A] = test(name) {
+  )(implicit trace: Trace): Spec[Any, A] = test(name) {
     val result = ZIO.scoped[Any](mock.build.flatMap(app.flip.provideEnvironment(_)))
-    assertM(result)(check)
+    assertZIO(result)(check)
   }
 
   private[mock] def testValueTimeboxed[E, A](name: String)(duration: Duration)(
       mock: ULayer[R],
       app: ZIO[R, E, A],
       check: Assertion[Option[A]]
-  ): ZSpec[Live, E] = test(name) {
+  )(implicit trace: Trace): Spec[Live, E] = test(name) {
     val result =
       Live.live {
         ZIO
@@ -42,14 +42,14 @@ trait MockSpecUtils[R] {
           .timeout(duration)
       }
 
-    assertM(result)(check)
+    assertZIO(result)(check)
   }
 
   private[mock] def testDied[E, A](name: String)(
       mock: ULayer[R],
       app: ZIO[R, E, A],
       check: Assertion[Throwable]
-  ): ZSpec[Any, Any] = test(name) {
+  )(implicit trace: Trace): Spec[Any, Any] = test(name) {
 
     val result: IO[Any, Throwable] =
       swapFailure(
@@ -60,7 +60,7 @@ trait MockSpecUtils[R] {
           }
       )
 
-    assertM(result)(check)
+    assertZIO(result)(check)
   }
 
 }

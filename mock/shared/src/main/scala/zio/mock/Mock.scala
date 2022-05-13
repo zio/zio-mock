@@ -19,7 +19,7 @@ package zio.mock
 import zio.stacktracer.TracingImplicits.disableAutoTrace
 import zio.stream.{ZSink, ZStream}
 import zio.test.TestPlatform
-import zio.{EnvironmentTag, Executor, Runtime, ULayer, URIO, URLayer, ZIO, ZTraceElement}
+import zio.{EnvironmentTag, Executor, Runtime, Trace, UIO, ULayer, URIO, URLayer, ZIO}
 
 /** A `Mock[R]` represents a mockable environment `R`.
   */
@@ -27,17 +27,28 @@ abstract class Mock[R: EnvironmentTag] { self =>
 
   protected[mock] val compose: URLayer[Proxy, R]
 
-  def empty(implicit trace: ZTraceElement): ULayer[R] = Expectation.NoCalls(self)
+  def empty(implicit trace: Trace): ULayer[R] = Expectation.NoCalls(self)
 
   /** Replaces Runtime on JS platform to one with unyielding executor.
     */
-  protected def withRuntime[R](implicit trace: ZTraceElement): URIO[R, Runtime[R]] =
-    ZIO.runtime[R].map { runtime =>
-      if (!TestPlatform.isJS) runtime
-      else
-        runtime.withExecutor {
-          val ec = runtime.runtimeConfig.executor.asExecutionContext
-          Executor.fromExecutionContext(Int.MaxValue)(ec)
+  protected def withRuntime[R, A](f: Runtime[R] => UIO[A])(implicit trace: Trace): ZIO[R, Nothing, A] =
+    if (!TestPlatform.isJS) {
+      ZIO.runtime[R].flatMap { runtime =>
+        f(runtime)
+      }
+    } else {
+      ZIO
+        .runtime[R]
+        .flatMap { runtime0 =>
+          ZIO
+            .runtime[R]
+            .flatMap { runtime =>
+              f(runtime)
+            }
+            .provideSomeLayer[R](Runtime.setExecutor {
+              val ec = runtime0.executor.asExecutionContext
+              Executor.fromExecutionContext(Int.MaxValue)(ec)
+            })
         }
     }
 

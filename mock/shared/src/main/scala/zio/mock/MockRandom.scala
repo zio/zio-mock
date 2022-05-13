@@ -18,7 +18,7 @@ package zio.mock
 
 import zio.internal.stacktracer.Tracer
 import zio.stacktracer.TracingImplicits.disableAutoTrace
-import zio.{Chunk, Random, UIO, URLayer, ZIO, ZLayer, ZTraceElement}
+import zio.{Chunk, Random, Trace, UIO, URLayer, ZIO, ZLayer}
 
 import java.util.UUID
 
@@ -50,36 +50,36 @@ object MockRandom extends Mock[Random] {
         .service[Proxy]
         .map(proxy =>
           new Random {
-            def nextBoolean(implicit trace: ZTraceElement): UIO[Boolean]                                            = proxy(NextBoolean)
-            def nextBytes(length: => Int)(implicit trace: ZTraceElement): UIO[Chunk[Byte]]                          = proxy(NextBytes, length)
-            def nextDouble(implicit trace: ZTraceElement): UIO[Double]                                              = proxy(NextDouble)
+            def nextBoolean(implicit trace: Trace): UIO[Boolean]                                            = proxy(NextBoolean)
+            def nextBytes(length: => Int)(implicit trace: Trace): UIO[Chunk[Byte]]                          = proxy(NextBytes, length)
+            def nextDouble(implicit trace: Trace): UIO[Double]                                              = proxy(NextDouble)
             def nextDoubleBetween(minInclusive: => Double, maxExclusive: => Double)(implicit
-                trace: ZTraceElement
+                trace: Trace
             ): UIO[Double] =
               proxy(NextDoubleBetween, minInclusive, maxExclusive)
-            def nextFloat(implicit trace: ZTraceElement): UIO[Float]                                                = proxy(NextFloat)
+            def nextFloat(implicit trace: Trace): UIO[Float]                                                = proxy(NextFloat)
             def nextFloatBetween(minInclusive: => Float, maxExclusive: => Float)(implicit
-                trace: ZTraceElement
+                trace: Trace
             ): UIO[Float] =
               proxy(NextFloatBetween, minInclusive, maxExclusive)
-            def nextGaussian(implicit trace: ZTraceElement): UIO[Double]                                            = proxy(NextGaussian)
-            def nextInt(implicit trace: ZTraceElement): UIO[Int]                                                    = proxy(NextInt)
-            def nextIntBetween(minInclusive: => Int, maxExclusive: => Int)(implicit trace: ZTraceElement): UIO[Int] =
+            def nextGaussian(implicit trace: Trace): UIO[Double]                                            = proxy(NextGaussian)
+            def nextInt(implicit trace: Trace): UIO[Int]                                                    = proxy(NextInt)
+            def nextIntBetween(minInclusive: => Int, maxExclusive: => Int)(implicit trace: Trace): UIO[Int] =
               proxy(NextIntBetween, minInclusive, maxExclusive)
-            def nextIntBounded(n: => Int)(implicit trace: ZTraceElement): UIO[Int]                                  = proxy(NextIntBounded, n)
-            def nextLong(implicit trace: ZTraceElement): UIO[Long]                                                  = proxy(NextLong)
+            def nextIntBounded(n: => Int)(implicit trace: Trace): UIO[Int]                                  = proxy(NextIntBounded, n)
+            def nextLong(implicit trace: Trace): UIO[Long]                                                  = proxy(NextLong)
             def nextLongBetween(minInclusive: => Long, maxExclusive: => Long)(implicit
-                trace: ZTraceElement
+                trace: Trace
             ): UIO[Long] =
               proxy(NextLongBetween, minInclusive, maxExclusive)
-            def nextLongBounded(n: => Long)(implicit trace: ZTraceElement): UIO[Long]                               = proxy(NextLongBounded, n)
-            def nextPrintableChar(implicit trace: ZTraceElement): UIO[Char]                                         = proxy(NextPrintableChar)
-            def nextString(length: => Int)(implicit trace: ZTraceElement): UIO[String]                              = proxy(NextString, length)
-            def nextUUID(implicit trace: ZTraceElement): UIO[UUID]                                                  = proxy(NextUUID)
-            def setSeed(seed: => Long)(implicit trace: ZTraceElement): UIO[Unit]                                    = proxy(SetSeed, seed)
+            def nextLongBounded(n: => Long)(implicit trace: Trace): UIO[Long]                               = proxy(NextLongBounded, n)
+            def nextPrintableChar(implicit trace: Trace): UIO[Char]                                         = proxy(NextPrintableChar)
+            def nextString(length: => Int)(implicit trace: Trace): UIO[String]                              = proxy(NextString, length)
+            def nextUUID(implicit trace: Trace): UIO[UUID]                                                  = proxy(NextUUID)
+            def setSeed(seed: => Long)(implicit trace: Trace): UIO[Unit]                                    = proxy(SetSeed, seed)
             def shuffle[A, Collection[+Element] <: Iterable[Element]](
                 collection: => Collection[A]
-            )(implicit bf: BuildFrom[Collection[A], A, Collection[A]], trace: ZTraceElement): UIO[Collection[A]] =
+            )(implicit bf: BuildFrom[Collection[A], A, Collection[A]], trace: Trace): UIO[Collection[A]] =
               proxy(Shuffle, collection).asInstanceOf[UIO[Collection[A]]]
           }
         )

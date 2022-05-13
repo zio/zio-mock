@@ -9,12 +9,12 @@ object ParallelMockSpec extends ZIOBaseSpec {
   import Assertion._
   import Expectation._
 
-  def spec: Spec[Any, TestFailure[Any], TestSuccess] =
+  def spec: Spec[Any, Any] =
     suite("ParallelMockSpec")(
       test("Count calls for the same expectation") {
         val mock = ImpureModuleMock.SingleParam(equalTo(1), value("r1")).repeats(100 to 100)
         val app  = ZIO.collectAllPar(Vector.fill(100)(ImpureModule.singleParam(1))).provideLayer(mock)
-        assertM(app)(hasSize[String](equalTo(100)) && hasSameElementsDistinct[String](Seq("r1")))
+        assertZIO(app)(hasSize[String](equalTo(100)) && hasSameElementsDistinct[String](Seq("r1")))
       },
       test("Collect calls for all expectations") {
         val params = 1 to 100
@@ -27,7 +27,7 @@ object ParallelMockSpec extends ZIOBaseSpec {
 
         val expected = params.map(i => s"r$i")
 
-        assertM(app)(hasSameElements(expected))
+        assertZIO(app)(hasSameElements(expected))
       }
     )
 }

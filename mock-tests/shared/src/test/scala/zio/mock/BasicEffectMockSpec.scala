@@ -3,7 +3,8 @@ package zio.mock
 import zio._
 import zio.mock.internal.{ExpectationState, InvalidCall, MockException}
 import zio.mock.module.{PureModule, PureModuleMock}
-import zio.test.{Assertion, Live, Spec, TestFailure, TestSuccess}
+import zio.test.{Assertion, Live, Spec}
+import TestAssertions._
 
 object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
 
@@ -13,7 +14,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
   import InvalidCall._
   import MockException._
 
-  def spec: Spec[Live, TestFailure[Any], TestSuccess] = suite("BasicEffectMockSpec")(
+  def spec: Spec[Live, Any] = suite("BasicEffectMockSpec")(
     suite("effects")(
       suite("static")(
         testValue("returns value")(
@@ -63,7 +64,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           equalTo("foo 1")
         ),
         testValue("returns valueZIO")(
-          PureModuleMock.SingleParam(equalTo(1), valueZIO(i => UIO.succeed(s"foo $i"))),
+          PureModuleMock.SingleParam(equalTo(1), valueZIO(i => ZIO.succeed(s"foo $i"))),
           PureModule.singleParam(1),
           equalTo("foo 1")
         ),
@@ -78,7 +79,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           equalTo("foo 1")
         ),
         testError("returns failureZIO")(
-          PureModuleMock.SingleParam(equalTo(1), failureZIO(i => IO.fail(s"foo $i"))),
+          PureModuleMock.SingleParam(equalTo(1), failureZIO(i => ZIO.fail(s"foo $i"))),
           PureModule.singleParam(1),
           equalTo("foo 1")
         )
@@ -95,7 +96,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           equalTo("foo (1,2,3)")
         ),
         testValue("returns valueZIO")(
-          PureModuleMock.ManyParams(equalTo((1, "2", 3L)), valueZIO(i => UIO.succeed(s"foo $i"))),
+          PureModuleMock.ManyParams(equalTo((1, "2", 3L)), valueZIO(i => ZIO.succeed(s"foo $i"))),
           PureModule.manyParams(1, "2", 3L),
           equalTo("foo (1,2,3)")
         ),
@@ -110,7 +111,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           equalTo("foo (1,2,3)")
         ),
         testError("returns failureZIO")(
-          PureModuleMock.ManyParams(equalTo((1, "2", 3L)), failureZIO(i => IO.fail(s"foo $i"))),
+          PureModuleMock.ManyParams(equalTo((1, "2", 3L)), failureZIO(i => ZIO.fail(s"foo $i"))),
           PureModule.manyParams(1, "2", 3L),
           equalTo("foo (1,2,3)")
         )
@@ -127,7 +128,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           equalTo("foo (1,2,3)")
         ),
         testValue("returns valueZIO")(
-          PureModuleMock.ManyParamLists(equalTo((1, "2", 3L)), valueZIO(i => UIO.succeed(s"foo $i"))),
+          PureModuleMock.ManyParamLists(equalTo((1, "2", 3L)), valueZIO(i => ZIO.succeed(s"foo $i"))),
           PureModule.manyParamLists(1)("2")(3L),
           equalTo("foo (1,2,3)")
         ),
@@ -142,7 +143,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           equalTo("foo (1,2,3)")
         ),
         testError("returns failureZIO")(
-          PureModuleMock.ManyParamLists(equalTo((1, "2", 3L)), failureZIO(i => IO.fail(s"foo $i"))),
+          PureModuleMock.ManyParamLists(equalTo((1, "2", 3L)), failureZIO(i => ZIO.fail(s"foo $i"))),
           PureModule.manyParamLists(1)("2")(3L),
           equalTo("foo (1,2,3)")
         )
@@ -174,7 +175,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
             equalTo("foo 1")
           ),
           testValue("returns valueZIO")(
-            PureModuleMock.Overloaded._0(equalTo(1), valueZIO(i => UIO.succeed(s"foo $i"))),
+            PureModuleMock.Overloaded._0(equalTo(1), valueZIO(i => ZIO.succeed(s"foo $i"))),
             PureModule.overloaded(1),
             equalTo("foo 1")
           ),
@@ -189,7 +190,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
             equalTo("foo 1")
           ),
           testError("returns failureZIO")(
-            PureModuleMock.Overloaded._0(equalTo(1), failureZIO(i => IO.fail(s"foo $i"))),
+            PureModuleMock.Overloaded._0(equalTo(1), failureZIO(i => ZIO.fail(s"foo $i"))),
             PureModule.overloaded(1),
             equalTo("foo 1")
           )
@@ -206,7 +207,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
             equalTo("foo 1")
           ),
           testValue("returns valueZIO")(
-            PureModuleMock.Overloaded._1(equalTo(1L), valueZIO(i => UIO.succeed(s"foo $i"))),
+            PureModuleMock.Overloaded._1(equalTo(1L), valueZIO(i => ZIO.succeed(s"foo $i"))),
             PureModule.overloaded(1L),
             equalTo("foo 1")
           ),
@@ -221,7 +222,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
             equalTo("foo 1")
           ),
           testError("returns failureZIO")(
-            PureModuleMock.Overloaded._1(equalTo(1L), failureZIO(i => IO.fail(s"foo $i"))),
+            PureModuleMock.Overloaded._1(equalTo(1L), failureZIO(i => ZIO.fail(s"foo $i"))),
             PureModule.overloaded(1L),
             equalTo("foo 1")
           )
@@ -243,7 +244,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           PureModuleMock.Varargs(
             equalTo((1, Seq("2", "3"))),
             valueZIO { case (a, b) =>
-              UIO.succeed(s"foo $a, [${b.mkString(", ")}]")
+              ZIO.succeed(s"foo $a, [${b.mkString(", ")}]")
             }
           ),
           PureModule.varargs(1, "2", "3"),
@@ -268,7 +269,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           PureModuleMock.Varargs(
             equalTo((1, Seq("2", "3"))),
             failureZIO { case (a, b) =>
-              IO.fail(s"foo $a, [${b.mkString(", ")}]")
+              ZIO.fail(s"foo $a, [${b.mkString(", ")}]")
             }
           ),
           PureModule.varargs(1, "2", "3"),
@@ -295,7 +296,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           PureModuleMock.CurriedVarargs(
             equalTo((1, Seq("2", "3"), 4L, Seq('5', '6'))),
             valueZIO { case (a, b, c, d) =>
-              UIO.succeed(s"foo $a, [${b.mkString(", ")}], $c, [${d.mkString(", ")}]")
+              ZIO.succeed(s"foo $a, [${b.mkString(", ")}], $c, [${d.mkString(", ")}]")
             }
           ),
           PureModule.curriedVarargs(1, "2", "3")(4L, '5', '6'),
@@ -320,7 +321,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           PureModuleMock.CurriedVarargs(
             equalTo((1, Seq("2", "3"), 4L, Seq('5', '6'))),
             failureZIO { case (a, b, c, d) =>
-              IO.fail(s"foo $a, [${b.mkString(", ")}], $c, [${d.mkString(", ")}]")
+              ZIO.fail(s"foo $a, [${b.mkString(", ")}], $c, [${d.mkString(", ")}]")
             }
           ),
           PureModule.curriedVarargs(1, "2", "3")(4L, '5', '6'),
@@ -339,7 +340,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           equalTo("foo 1")
         ),
         testValue("returns valueZIO")(
-          PureModuleMock.ByName(equalTo(1), valueZIO(i => UIO.succeed(s"foo $i"))),
+          PureModuleMock.ByName(equalTo(1), valueZIO(i => ZIO.succeed(s"foo $i"))),
           PureModule.byName(1),
           equalTo("foo 1")
         ),
@@ -354,7 +355,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           equalTo("foo 1")
         ),
         testError("returns failureZIO")(
-          PureModuleMock.ByName(equalTo(1), failureZIO(i => IO.fail(s"foo $i"))),
+          PureModuleMock.ByName(equalTo(1), failureZIO(i => ZIO.fail(s"foo $i"))),
           PureModule.byName(1),
           equalTo("foo 1")
         )
@@ -371,7 +372,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           equalTo("foo (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)")
         ),
         testValue("returns valueZIO")(
-          PureModuleMock.MaxParams(equalTo(intTuple22), valueZIO(i => UIO.succeed(s"foo $i"))),
+          PureModuleMock.MaxParams(equalTo(intTuple22), valueZIO(i => ZIO.succeed(s"foo $i"))),
           (PureModule.maxParams _).tupled(intTuple22),
           equalTo("foo (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)")
         ),
@@ -386,7 +387,7 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
           equalTo("foo (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)")
         ),
         testError("returns failureZIO")(
-          PureModuleMock.MaxParams(equalTo(intTuple22), failureZIO(i => IO.fail(s"foo $i"))),
+          PureModuleMock.MaxParams(equalTo(intTuple22), failureZIO(i => ZIO.fail(s"foo $i"))),
           (PureModule.maxParams _).tupled(intTuple22),
           equalTo("foo (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22)")
         )
@@ -415,12 +416,12 @@ object BasicEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule] {
       testDied("invalid arguments")(
         PureModuleMock.ParameterizedCommand(equalTo(1)),
         PureModule.parameterizedCommand(2),
-        equalTo(InvalidCallException(List(InvalidArguments(PureModuleMock.ParameterizedCommand, 2, equalTo(1)))))
+        kindaEqualTo(InvalidCallException(List(InvalidArguments(PureModuleMock.ParameterizedCommand, 2, equalTo(1)))))
       ),
       testDied("invalid method")(
         PureModuleMock.ParameterizedCommand(equalTo(1)),
         PureModule.singleParam(1),
-        equalTo(
+        kindaEqualTo(
           InvalidCallException(
             List(InvalidCapability(PureModuleMock.SingleParam, PureModuleMock.ParameterizedCommand, equalTo(1)))
           )

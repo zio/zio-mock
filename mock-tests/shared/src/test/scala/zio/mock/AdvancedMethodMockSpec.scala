@@ -1,15 +1,16 @@
 package zio.mock
 
+import zio.mock.internal.InvalidCall.InvalidCapability
 import zio.mock.internal.{InvalidCall, MockException}
 import zio.mock.module.{ImpureModule, ImpureModuleMock}
-import zio.test.{Assertion, Spec, TestFailure, TestSuccess}
-import zio.{URIO, ZIO}
+import zio.test.{Assertion, Spec}
+import zio.{Trace, URIO, ZIO}
+import TestAssertions._
 
 object AdvancedMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] {
 
   import Assertion._
   import Expectation._
-  import InvalidCall._
   import MockException._
 
   val cmdA = ImpureModuleMock.SingleParam
@@ -27,20 +28,20 @@ object AdvancedMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModul
   type E = InvalidCallException
   type L = List[InvalidCall]
 
-  def hasFailedMatches[T <: InvalidCall](failedMatches: T*): Assertion[Throwable] = {
+  def hasFailedMatches[T <: InvalidCall](failedMatches: T*)(implicit trace: Trace): Assertion[Throwable] = {
     val zero = hasSize(equalTo(failedMatches.length))
     isSubtype[E](
       hasField[E, L](
         "failedMatches",
         _.failedMatches,
         failedMatches.zipWithIndex.foldLeft[Assertion[L]](zero) { case (acc, (failure, idx)) =>
-          acc && hasAt(idx)(equalTo(failure))
+          acc && hasAt(idx)(kindaEqualTo(failure))
         }
       )
     )
   }
 
-  def hasUnexpectedCall[I, E, A](capability: Capability[ImpureModule, I, E, A], args: I): Assertion[Throwable] =
+  def hasUnexpectedCall[I, E, A](capability: Capability[ImpureModule, I, E, A], args: I)(implicit trace: Trace): Assertion[Throwable] =
     isSubtype[UnexpectedCallException[ImpureModule, I, E, A]](
       hasField[UnexpectedCallException[ImpureModule, I, E, A], Capability[ImpureModule, I, E, A]](
         "capability",
@@ -50,10 +51,10 @@ object AdvancedMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModul
         hasField[UnexpectedCallException[ImpureModule, I, E, A], Any]("args", _.args, equalTo(args))
     )
 
-  def hasUnsatisfiedExpectations: Assertion[Throwable] =
+  def hasUnsatisfiedExpectations(implicit trace: Trace): Assertion[Throwable] =
     isSubtype[UnsatisfiedExpectationsException[ImpureModule]](anything)
 
-  def spec: Spec[Any, TestFailure[Any], TestSuccess] =
+  def spec: Spec[Any, Any] =
     suite("AdvancedMethodMockSpec")(
       suite("expectations composition")(
         suite("A and B")(

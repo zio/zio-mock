@@ -18,7 +18,7 @@ package zio.mock
 
 import zio.stacktracer.TracingImplicits.disableAutoTrace
 import zio.test.Assertion
-import zio.{=!=, EnvironmentTag, IO, LightTypeTag, taggedIsSubtype, taggedTagType}
+import zio.{=!=, EnvironmentTag, IO, LightTypeTag, ZIO, taggedIsSubtype, taggedTagType}
 
 import java.util.UUID
 
@@ -43,11 +43,11 @@ protected[mock] abstract class Capability[R: EnvironmentTag, I: EnvironmentTag, 
     Expectation.Call[R, I, E, A](
       self,
       Assertion.isUnit.asInstanceOf[Assertion[I]],
-      ((_: I) => IO.unit).asInstanceOf[I => IO[E, A]]
+      ((_: I) => ZIO.unit).asInstanceOf[I => IO[E, A]]
     )
 
   def apply(assertion: Assertion[I])(implicit ev1: I =!= Unit, ev2: A <:< Unit): Expectation[R] =
-    Expectation.Call[R, I, E, A](self, assertion, ((_: I) => IO.unit).asInstanceOf[I => IO[E, A]])
+    Expectation.Call[R, I, E, A](self, assertion, ((_: I) => ZIO.unit).asInstanceOf[I => IO[E, A]])
 
   def apply(assertion: Assertion[I], result: Result[I, E, A])(implicit ev: I =!= Unit): Expectation[R] =
     Expectation.Call[R, I, E, A](self, assertion, result.io)
@@ -261,7 +261,7 @@ object Capability {
       Expectation.Call[R, I, E, A](
         toMethod[R, I, E, A](poly),
         assertion,
-        ((_: I) => IO.unit).asInstanceOf[I => IO[E, A]]
+        ((_: I) => ZIO.unit).asInstanceOf[I => IO[E, A]]
       )
 
     private def toExpectation[R: EnvironmentTag, I: EnvironmentTag, E: EnvironmentTag, A: EnvironmentTag](
