@@ -22,7 +22,7 @@ object MockReporterSpec extends ZIOSpecDefault {
   val behaviorSuite = suite("Behavior")(
     test("should render `And` correctly.") {
       verifyRendering(andSuite) { summary =>
-        val output = summary.summary
+        val output = summary.failureDetails
         assertTrue(
           summary.fail == 1,
           summary.total == 1,
@@ -41,7 +41,7 @@ object MockReporterSpec extends ZIOSpecDefault {
     },
     test("should render `InvalidCall`s correctly.") {
       verifyRendering(invalidCallSuite) { summary =>
-        val output = summary.summary
+        val output = summary.failureDetails
         assertTrue(
           summary.fail == 1,
           summary.total == 1,
@@ -59,7 +59,7 @@ object MockReporterSpec extends ZIOSpecDefault {
     },
     test("should render `InvalidCall.InvalidCapability` correctly.") {
       verifyRendering(invalidCapabiltySuite) { summary =>
-        val output = summary.summary
+        val output = summary.failureDetails
         assertTrue(
           summary.fail == 1,
           summary.total == 1,
@@ -77,7 +77,7 @@ object MockReporterSpec extends ZIOSpecDefault {
     },
     test("should render polymorphic mock failures correctly.") {
       verifyRendering(polySuite) { summary =>
-        val output = summary.summary
+        val output = summary.failureDetails
         assertTrue(
           summary.fail == 1,
           summary.total == 1,
@@ -95,7 +95,7 @@ object MockReporterSpec extends ZIOSpecDefault {
     },
     test("should render `UnexpectedCallException` correctly.") {
       verifyRendering(unexpectedCallSuite) { summary =>
-        val output = summary.summary
+        val output = summary.failureDetails
         assertTrue(
           summary.fail == 1,
           summary.total == 1,
@@ -110,7 +110,7 @@ object MockReporterSpec extends ZIOSpecDefault {
     },
     test("should render `UnexpectedSatisfiedExpectaionException` correctly.") {
       verifyRendering(unsatisfiedExpectationSuite) { summary =>
-        val output = summary.summary
+        val output = summary.failureDetails
         assertTrue(
           summary.fail == 1,
           summary.total == 1,

@@ -233,8 +233,10 @@ private[mock] object MockableMacro {
         (info.capability, info.params.map(_.name)) match {
           case (_: Capability.Effect, Nil)        => q"proxy($tag)"
           case (_: Capability.Effect, paramNames) => q"proxy($tag, ..$paramNames)"
-          case (_: Capability.Method, Nil)        => q"rts.unsafeRunTask(proxy($tag))"
-          case (_: Capability.Method, paramNames) => q"rts.unsafeRunTask(proxy($tag, ..$paramNames))"
+          case (_: Capability.Method, Nil)        =>
+            q"_root_.zio.Unsafe.unsafeCompat { implicit u => rts.unsafe.run(proxy($tag)).getOrThrowFiberFailure() }"
+          case (_: Capability.Method, paramNames) =>
+            q"_root_.zio.Unsafe.unsafeCompat { implicit u => rts.unsafe.run(proxy($tag, ..$paramNames)).getOrThrowFiberFailure() }"
           case (_: Capability.Sink, Nil)          =>
             q"rts.unsafeRun(proxy($tag).catchAll(error => _root_.zio.UIO(_root_.zio.stream.ZSink.fail(error))))"
           case (_: Capability.Sink, paramNames)   =>

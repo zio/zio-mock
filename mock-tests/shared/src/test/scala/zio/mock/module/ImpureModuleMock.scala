@@ -2,7 +2,7 @@ package zio.mock.module
 
 import com.github.ghik.silencer.silent
 import zio.mock.{Mock, Proxy}
-import zio.{EnvironmentTag, URLayer, ZIO, ZLayer}
+import zio.{EnvironmentTag, URLayer, Unsafe, ZIO, ZLayer}
 
 /** Example module used for testing ZIO Mock framework.
   */
@@ -43,57 +43,99 @@ object ImpureModuleMock extends Mock[ImpureModule] {
           withRuntime[Proxy, ImpureModule] { rts =>
             ZIO.succeed {
               new ImpureModule {
-                def zeroParams: String = rts.unsafeRunTask(proxy(ZeroParams))
+                def zeroParams: String = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(ZeroParams)).getOrThrowFiberFailure()
+                }
 
-                def zeroParamsWithParens(): String = rts.unsafeRunTask(proxy(ZeroParamsWithParens))
+                def zeroParamsWithParens(): String = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(ZeroParamsWithParens)).getOrThrowFiberFailure()
+                }
 
-                def singleParam(a: Int): String = rts.unsafeRunTask(proxy(SingleParam, a))
+                def singleParam(a: Int): String = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(SingleParam, a)).getOrThrowFiberFailure()
+                }
 
-                def manyParams(a: Int, b: String, c: Long): String = rts.unsafeRunTask(proxy(ManyParams, (a, b, c)))
+                def manyParams(a: Int, b: String, c: Long): String = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(ManyParams, (a, b, c))).getOrThrowFiberFailure()
+                }
 
                 def manyParamLists(a: Int)(b: String)(c: Long): String =
-                  rts.unsafeRunTask(proxy(ManyParamLists, a, b, c))
+                  Unsafe.unsafeCompat { implicit u =>
+                    rts.unsafe.run(proxy(ManyParamLists, a, b, c)).getOrThrowFiberFailure()
+                  }
 
                 @silent("side-effecting nullary methods")
-                def command: Unit = rts.unsafeRunTask(proxy(Command))
+                def command: Unit = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(Command))
+                }
 
-                def parameterizedCommand(a: Int): Unit = rts.unsafeRunTask(proxy(ParameterizedCommand, a))
+                def parameterizedCommand(a: Int): Unit = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(ParameterizedCommand, a))
+                }
 
-                def overloaded(n: Int): String = rts.unsafeRunTask(proxy(Overloaded._0, n))
+                def overloaded(n: Int): String = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(Overloaded._0, n)).getOrThrowFiberFailure()
+                }
 
-                def overloaded(n: Long): String = rts.unsafeRunTask(proxy(Overloaded._1, n))
+                def overloaded(n: Long): String = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(Overloaded._1, n)).getOrThrowFiberFailure()
+                }
 
-                def polyInput[I: EnvironmentTag](v: I): String = rts.unsafeRunTask(proxy(PolyInput.of[I], v))
+                def polyInput[I: EnvironmentTag](v: I): String = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(PolyInput.of[I], v)).getOrThrowFiberFailure()
+                }
 
                 def polyError[E <: Throwable: EnvironmentTag](v: String): String =
-                  rts.unsafeRunTask(proxy(PolyError.of[E], v))
+                  Unsafe.unsafeCompat { implicit u =>
+                    rts.unsafe.run(proxy(PolyError.of[E], v)).getOrThrowFiberFailure()
+                  }
 
-                def polyOutput[A: EnvironmentTag](v: String): A = rts.unsafeRunTask(proxy(PolyOutput.of[A], v))
+                def polyOutput[A: EnvironmentTag](v: String): A = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(PolyOutput.of[A], v)).getOrThrowFiberFailure()
+                }
 
                 def polyInputError[I: EnvironmentTag, E <: Throwable: EnvironmentTag](v: I): String =
-                  rts.unsafeRunTask(proxy(PolyInputError.of[I, E], v))
+                  Unsafe.unsafeCompat { implicit u =>
+                    rts.unsafe.run(proxy(PolyInputError.of[I, E], v)).getOrThrowFiberFailure()
+                  }
 
                 def polyInputOutput[I: EnvironmentTag, A: EnvironmentTag](v: I): A =
-                  rts.unsafeRunTask(proxy(PolyInputOutput.of[I, A], v))
+                  Unsafe.unsafeCompat { implicit u =>
+                    rts.unsafe.run(proxy(PolyInputOutput.of[I, A], v)).getOrThrowFiberFailure()
+                  }
 
                 def polyErrorOutput[E <: Throwable: EnvironmentTag, A: EnvironmentTag](v: String): A =
-                  rts.unsafeRunTask(proxy(PolyErrorOutput.of[E, A], v))
+                  Unsafe.unsafeCompat { implicit u =>
+                    rts.unsafe.run(proxy(PolyErrorOutput.of[E, A], v)).getOrThrowFiberFailure()
+                  }
 
                 def polyInputErrorOutput[I: EnvironmentTag, E <: Throwable: EnvironmentTag, A: EnvironmentTag](
                     v: I
                 ): A =
-                  rts.unsafeRunTask(proxy(PolyInputErrorOutput.of[I, E, A], v))
+                  Unsafe.unsafeCompat { implicit u =>
+                    rts.unsafe.run(proxy(PolyInputErrorOutput.of[I, E, A], v)).getOrThrowFiberFailure()
+                  }
 
-                def polyMixed[A: EnvironmentTag]: (A, String) = rts.unsafeRunTask(proxy(PolyMixed.of[(A, String)]))
+                def polyMixed[A: EnvironmentTag]: (A, String) = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(PolyMixed.of[(A, String)])).getOrThrowFiberFailure()
+                }
 
-                def polyBounded[A <: AnyVal: EnvironmentTag]: A = rts.unsafeRunTask(proxy(PolyBounded.of[A]))
+                def polyBounded[A <: AnyVal: EnvironmentTag]: A = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(PolyBounded.of[A])).getOrThrowFiberFailure()
+                }
 
-                def varargs(a: Int, b: String*): String = rts.unsafeRunTask(proxy(Varargs, (a, b)))
+                def varargs(a: Int, b: String*): String = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(Varargs, (a, b))).getOrThrowFiberFailure()
+                }
 
                 def curriedVarargs(a: Int, b: String*)(c: Long, d: Char*): String =
-                  rts.unsafeRunTask(proxy(CurriedVarargs, (a, b, c, d)))
+                  Unsafe.unsafeCompat { implicit u =>
+                    rts.unsafe.run(proxy(CurriedVarargs, (a, b, c, d))).getOrThrowFiberFailure()
+                  }
 
-                def byName(a: => Int): String = rts.unsafeRunTask(proxy(ByName, a))
+                def byName(a: => Int): String = Unsafe.unsafeCompat { implicit u =>
+                  rts.unsafe.run(proxy(ByName, a)).getOrThrowFiberFailure()
+                }
 
                 def maxParams(
                     a: Int,
@@ -118,12 +160,15 @@ object ImpureModuleMock extends Mock[ImpureModule] {
                     t: Int,
                     u: Int,
                     v: Int
-                ): String =
-                  rts
-                    .unsafeRunTask(proxy(MaxParams, (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v)))
+                ): String = Unsafe.unsafeCompat { implicit unsafe =>
+                  rts.unsafe
+                    .run(proxy(MaxParams, (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v)))
+                    .getOrThrowFiberFailure()
+                }
               }
             }
           }
         }
     )
+
 }

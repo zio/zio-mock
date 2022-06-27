@@ -1,11 +1,11 @@
 package zio.mock
 
+import zio.Chunk
 import zio.test.{TestAspectAtLeastR, TestEnvironment, ZIOSpecDefault}
-import zio.{Chunk, ZIOAppArgs}
 
 abstract class MockSpecDefault extends ZIOSpecDefault {
 
-  override def aspects: Chunk[TestAspectAtLeastR[Environment with TestEnvironment with ZIOAppArgs]] =
+  override def aspects: Chunk[TestAspectAtLeastR[TestEnvironment]] =
     super.aspects :+ MockReporter()
 
 }
