@@ -3,7 +3,7 @@ package zio.mock.examples
 import zio.mock.Expectation.{unit, value, valueF}
 import zio.mock.{MockClock, MockConsole, MockRandom}
 import zio.test.Assertion._
-import zio.test.{Spec, TestFailure, TestSuccess, ZIOSpecDefault, assertZIO}
+import zio.test.{Spec, ZIOSpecDefault, assertZIO}
 import zio.{Clock, Console, Random, ZIO}
 
 import java.io.IOException
