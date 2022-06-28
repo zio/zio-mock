@@ -16,10 +16,9 @@
 
 package zio.mock
 
-import zio.stacktracer.TracingImplicits.disableAutoTrace
 import zio.stream.{ZSink, ZStream}
 import zio.test.TestPlatform
-import zio.{EnvironmentTag, Executor, Runtime, Trace, UIO, ULayer, URIO, URLayer, ZIO}
+import zio.{EnvironmentTag, Runtime, RuntimeFlag, RuntimeFlags, Trace, UIO, ULayer, URLayer, ZIO}
 
 /** A `Mock[R]` represents a mockable environment `R`.
   */
@@ -40,15 +39,13 @@ abstract class Mock[R: EnvironmentTag] { self =>
       ZIO
         .runtime[R]
         .flatMap { runtime0 =>
-          ZIO
-            .runtime[R]
-            .flatMap { runtime =>
-              f(runtime)
-            }
-            .provideSomeLayer[R](Runtime.setExecutor {
-              val ec = runtime0.executor.asExecutionContext
-              Executor.fromExecutionContext(Int.MaxValue)(ec)
-            })
+          f(
+            Runtime(
+              runtime0.environment,
+              runtime0.fiberRefs,
+              RuntimeFlags.disable(runtime0.runtimeFlags)(RuntimeFlag.CooperativeYielding)
+            )
+          )
         }
     }
 

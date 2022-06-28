@@ -30,9 +30,11 @@ package object testing {
 
     val testOutput = if (showSpecOutput) TestOutput.live else ZLayer.succeed(SilentTestOutput)
     val layer0     = testEnvironment ++ Scope.default ++ ZIOAppArgs.empty
-    val layer1     = (Console.live >>> TestLogger.fromConsole(
+    val layer1     = TestLogger.fromConsole(
       Console.ConsoleLive
-    ) >>> ExecutionEventPrinter.live >>> testOutput >>> ExecutionEventSink.live)
+    ) >>> ExecutionEventPrinter.live(
+      ReporterEventRenderer.ConsoleEventRenderer
+    ) >>> testOutput >>> ExecutionEventSink.live
 
     // perTestLayer = (ZLayer.succeedEnvironment(environment1) ++ ZEnv.live) >>> (TestEnvironment.live ++ ZLayer
     //                  .environment[Scope] ++ ZLayer.environment[ZIOAppArgs])

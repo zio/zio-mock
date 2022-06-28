@@ -417,7 +417,9 @@ object BasicMethodMockSpec extends ZIOBaseSpec with MockSpecUtils[ImpureModule] 
         testDied("invalid arguments")(
           ImpureModuleMock.ParameterizedCommand(equalTo(1)),
           ImpureModule.parameterizedCommand(2),
-          kindaEqualTo(InvalidCallException(List(InvalidArguments(ImpureModuleMock.ParameterizedCommand, 2, equalTo(1)))))
+          kindaEqualTo(
+            InvalidCallException(List(InvalidArguments(ImpureModuleMock.ParameterizedCommand, 2, equalTo(1))))
+          )
         ),
         testDied("invalid method")(
           ImpureModuleMock.ParameterizedCommand(equalTo(1)),

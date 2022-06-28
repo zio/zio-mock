@@ -224,23 +224,39 @@ private[mock] object MockableMacro {
         if (info.symbol.isAbstract) Modifiers(Flag.FINAL)
         else Modifiers(Flag.FINAL | Flag.OVERRIDE)
 
-      val returnType  = info.capability match {
+      val returnType = info.capability match {
         case Capability.Method(t)       => tq"$t"
         case Capability.Stream(r, e, a) => tq"_root_.zio.stream.ZStream[$r, $e, $a]"
         case _                          => tq"_root_.zio.ZIO[$r, $e, $a]"
       }
+
+      def wrapInUnsafe(tree: Tree): Tree =
+        q"""_root_.zio.Unsafe.unsafeCompat { __unsafeVal =>
+              implicit val __unsafeImplicit = __unsafeVal
+              $tree
+           }
+         """
+
       val returnValue =
         (info.capability, info.params.map(_.name)) match {
           case (_: Capability.Effect, Nil)        => q"proxy($tag)"
           case (_: Capability.Effect, paramNames) => q"proxy($tag, ..$paramNames)"
-          case (_: Capability.Method, Nil)        => q"rts.unsafeRunTask(proxy($tag))"
-          case (_: Capability.Method, paramNames) => q"rts.unsafeRunTask(proxy($tag, ..$paramNames))"
+          case (_: Capability.Method, Nil)        =>
+            wrapInUnsafe(q"rts.unsafe.run(proxy($tag)).getOrThrow()")
+          case (_: Capability.Method, paramNames) =>
+            wrapInUnsafe(q"rts.unsafe.run(proxy($tag, ..$paramNames)).getOrThrow()")
           case (_: Capability.Sink, Nil)          =>
-            q"rts.unsafeRun(proxy($tag).catchAll(error => _root_.zio.UIO(_root_.zio.stream.ZSink.fail(error))))"
+            wrapInUnsafe(
+              q"rts.unsafe.run(proxy($tag).catchAll(error => _root_.zio.UIO(_root_.zio.stream.ZSink.fail(error)))).getOrThrowFiberFailure()"
+            )
           case (_: Capability.Sink, paramNames)   =>
-            q"rts.unsafeRun(proxy($tag, ..$paramNames).catchAll(error => _root_.zio.UIO(_root_.zio.stream.ZSink.fail(error))))"
-          case (_: Capability.Stream, Nil)        => q"rts.unsafeRun(proxy($tag))"
-          case (_: Capability.Stream, paramNames) => q"rts.unsafeRun(proxy($tag, ..$paramNames))"
+            wrapInUnsafe(
+              q"rts.unsafe.run(proxy($tag, ..$paramNames).catchAll(error => _root_.zio.UIO(_root_.zio.stream.ZSink.fail(error)))).getOrThrowFiberFailure()"
+            )
+          case (_: Capability.Stream, Nil)        =>
+            wrapInUnsafe(q"rts.unsafe.run(proxy($tag)).getOrThrowFiberFailure()")
+          case (_: Capability.Stream, paramNames) =>
+            wrapInUnsafe(q"rts.unsafe.run(proxy($tag, ..$paramNames)).getOrThrowFiberFailure()")
         }
 
       val noParams = info.symbol.paramLists.isEmpty // Scala 2.11 workaround. For some reason isVal == false in 2.11

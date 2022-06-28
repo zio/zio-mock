@@ -22,11 +22,16 @@ import zio.{UIO, _}
 
 import java.time
 import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
 object MockClock extends Mock[Clock] {
 
-  object CurrentTime     extends Effect[TimeUnit, Nothing, Long]
+  object CurrentTime {
+    object _0 extends Effect[TimeUnit, Nothing, Long]
+    object _1 extends Effect[ChronoUnit, Nothing, Long]
+  }
+
   object CurrentDateTime extends Effect[Unit, Nothing, OffsetDateTime]
   object Instant         extends Effect[Unit, Nothing, java.time.Instant]
   object LocalDateTime   extends Effect[Unit, Nothing, java.time.LocalDateTime]
@@ -43,7 +48,11 @@ object MockClock extends Mock[Clock] {
         .map { proxy =>
           new Clock {
 
-            def currentTime(unit: => TimeUnit)(implicit trace: Trace): UIO[Long]       = proxy(CurrentTime, unit)
+            def currentTime(unit: => TimeUnit)(implicit trace: Trace): UIO[Long] = proxy(CurrentTime._0, unit)
+
+            def currentTime(unit: => ChronoUnit)(implicit trace: Trace, d: DummyImplicit): UIO[Long] =
+              proxy(CurrentTime._1, unit)
+
             def currentDateTime(implicit trace: Trace): UIO[OffsetDateTime]            = proxy(CurrentDateTime)
             def nanoTime(implicit trace: Trace): UIO[Long]                             = proxy(NanoTime)
             def scheduler(implicit trace: Trace): UIO[Scheduler]                       = proxy(Scheduler)
@@ -51,6 +60,7 @@ object MockClock extends Mock[Clock] {
             def instant(implicit trace: Trace): zio.UIO[java.time.Instant]             = proxy(Instant)
             def localDateTime(implicit trace: Trace): zio.UIO[java.time.LocalDateTime] = proxy(LocalDateTime)
             def javaClock(implicit trace: zio.Trace): UIO[time.Clock]                  = proxy(JavaClock)
+
           }
         }
     )

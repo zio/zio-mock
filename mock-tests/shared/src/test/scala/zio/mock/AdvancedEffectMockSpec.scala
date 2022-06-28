@@ -49,9 +49,9 @@ object AdvancedEffectMockSpec extends ZIOBaseSpec with MockSpecUtils[PureModule]
         "capability",
         _.capability,
         equalTo(capability)
-      ) 
-      &&
-      hasField[UnexpectedCallException[PureModule, I, E, A], Any]("args", _.args, equalTo(args))
+      )
+        &&
+          hasField[UnexpectedCallException[PureModule, I, E, A], Any]("args", _.args, equalTo(args))
     )
 
   def hasUnsatisfiedExpectations(implicit trace: Trace): Assertion[Throwable] =

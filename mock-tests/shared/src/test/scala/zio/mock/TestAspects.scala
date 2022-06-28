@@ -16,7 +16,7 @@ object TestAspects {
         mockedZEnv <- env
         // Since we may be overriding native services that are not available explicitly in the environment,
         // we need to explicitly override them in a scope.
-        _     <- ZEnv.services.locallyScopedWith(_.union(mockedZEnv))
+        _     <- DefaultServices.currentServices.locallyScopedWith(_.union(mockedZEnv))
       } yield {
         { (success: TestSuccess) => ZIO.succeed(success) }
       }).mapError(TestFailure.fail)
