@@ -7,7 +7,7 @@
 # Summary
 
 # Documentation
-[ZIO Mock Microsite](https://zio.github.io/zio-mock/)
+[ZIO Ecosystem Documentation](https://zio.dev/resources/ecosystem/officials/zio-mock)
 
 # Contributing
 [Documentation for contributors](https://zio.github.io/zio-mock/docs/about/about_contributing)
