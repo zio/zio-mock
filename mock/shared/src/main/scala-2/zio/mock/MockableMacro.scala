@@ -231,7 +231,7 @@ private[mock] object MockableMacro {
       }
 
       def wrapInUnsafe(tree: Tree): Tree =
-        q"""_root_.zio.Unsafe.unsafeCompat { __unsafeVal =>
+        q"""_root_.zio.Unsafe.unsafe { __unsafeVal =>
               implicit val __unsafeImplicit = __unsafeVal
               $tree
            }

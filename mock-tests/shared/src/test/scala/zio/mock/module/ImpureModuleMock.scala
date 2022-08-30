@@ -43,97 +43,97 @@ object ImpureModuleMock extends Mock[ImpureModule] {
           withRuntime[Proxy, ImpureModule] { rts =>
             ZIO.succeed {
               new ImpureModule {
-                def zeroParams: String = Unsafe.unsafeCompat { implicit u =>
+                def zeroParams: String = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(ZeroParams)).getOrThrow()
                 }
 
-                def zeroParamsWithParens(): String = Unsafe.unsafeCompat { implicit u =>
+                def zeroParamsWithParens(): String = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(ZeroParamsWithParens)).getOrThrow()
                 }
 
-                def singleParam(a: Int): String = Unsafe.unsafeCompat { implicit u =>
+                def singleParam(a: Int): String = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(SingleParam, a)).getOrThrow()
                 }
 
-                def manyParams(a: Int, b: String, c: Long): String = Unsafe.unsafeCompat { implicit u =>
+                def manyParams(a: Int, b: String, c: Long): String = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(ManyParams, (a, b, c))).getOrThrow()
                 }
 
                 def manyParamLists(a: Int)(b: String)(c: Long): String =
-                  Unsafe.unsafeCompat { implicit u =>
+                  Unsafe.unsafe { implicit u =>
                     rts.unsafe.run(proxy(ManyParamLists, a, b, c)).getOrThrow()
                   }
 
                 @silent("side-effecting nullary methods")
-                def command: Unit = Unsafe.unsafeCompat { implicit u =>
+                def command: Unit = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(Command)).getOrThrow()
                 }
 
-                def parameterizedCommand(a: Int): Unit = Unsafe.unsafeCompat { implicit u =>
+                def parameterizedCommand(a: Int): Unit = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(ParameterizedCommand, a)).getOrThrow()
                 }
 
-                def overloaded(n: Int): String = Unsafe.unsafeCompat { implicit u =>
+                def overloaded(n: Int): String = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(Overloaded._0, n)).getOrThrow()
                 }
 
-                def overloaded(n: Long): String = Unsafe.unsafeCompat { implicit u =>
+                def overloaded(n: Long): String = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(Overloaded._1, n)).getOrThrow()
                 }
 
-                def polyInput[I: EnvironmentTag](v: I): String = Unsafe.unsafeCompat { implicit u =>
+                def polyInput[I: EnvironmentTag](v: I): String = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(PolyInput.of[I], v)).getOrThrow()
                 }
 
                 def polyError[E <: Throwable: EnvironmentTag](v: String): String =
-                  Unsafe.unsafeCompat { implicit u =>
+                  Unsafe.unsafe { implicit u =>
                     rts.unsafe.run(proxy(PolyError.of[E], v)).getOrThrow()
                   }
 
-                def polyOutput[A: EnvironmentTag](v: String): A = Unsafe.unsafeCompat { implicit u =>
+                def polyOutput[A: EnvironmentTag](v: String): A = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(PolyOutput.of[A], v)).getOrThrow()
                 }
 
                 def polyInputError[I: EnvironmentTag, E <: Throwable: EnvironmentTag](v: I): String =
-                  Unsafe.unsafeCompat { implicit u =>
+                  Unsafe.unsafe { implicit u =>
                     rts.unsafe.run(proxy(PolyInputError.of[I, E], v)).getOrThrow()
                   }
 
                 def polyInputOutput[I: EnvironmentTag, A: EnvironmentTag](v: I): A =
-                  Unsafe.unsafeCompat { implicit u =>
+                  Unsafe.unsafe { implicit u =>
                     rts.unsafe.run(proxy(PolyInputOutput.of[I, A], v)).getOrThrow()
                   }
 
                 def polyErrorOutput[E <: Throwable: EnvironmentTag, A: EnvironmentTag](v: String): A =
-                  Unsafe.unsafeCompat { implicit u =>
+                  Unsafe.unsafe { implicit u =>
                     rts.unsafe.run(proxy(PolyErrorOutput.of[E, A], v)).getOrThrow()
                   }
 
                 def polyInputErrorOutput[I: EnvironmentTag, E <: Throwable: EnvironmentTag, A: EnvironmentTag](
                     v: I
                 ): A =
-                  Unsafe.unsafeCompat { implicit u =>
+                  Unsafe.unsafe { implicit u =>
                     rts.unsafe.run(proxy(PolyInputErrorOutput.of[I, E, A], v)).getOrThrow()
                   }
 
-                def polyMixed[A: EnvironmentTag]: (A, String) = Unsafe.unsafeCompat { implicit u =>
+                def polyMixed[A: EnvironmentTag]: (A, String) = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(PolyMixed.of[(A, String)])).getOrThrow()
                 }
 
-                def polyBounded[A <: AnyVal: EnvironmentTag]: A = Unsafe.unsafeCompat { implicit u =>
+                def polyBounded[A <: AnyVal: EnvironmentTag]: A = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(PolyBounded.of[A])).getOrThrow()
                 }
 
-                def varargs(a: Int, b: String*): String = Unsafe.unsafeCompat { implicit u =>
+                def varargs(a: Int, b: String*): String = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(Varargs, (a, b))).getOrThrow()
                 }
 
                 def curriedVarargs(a: Int, b: String*)(c: Long, d: Char*): String =
-                  Unsafe.unsafeCompat { implicit u =>
+                  Unsafe.unsafe { implicit u =>
                     rts.unsafe.run(proxy(CurriedVarargs, (a, b, c, d))).getOrThrow()
                   }
 
-                def byName(a: => Int): String = Unsafe.unsafeCompat { implicit u =>
+                def byName(a: => Int): String = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(ByName, a)).getOrThrow()
                 }
 
@@ -160,7 +160,7 @@ object ImpureModuleMock extends Mock[ImpureModule] {
                     t: Int,
                     u: Int,
                     v: Int
-                ): String = Unsafe.unsafeCompat { implicit unsafe =>
+                ): String = Unsafe.unsafe { implicit unsafe =>
                   rts.unsafe
                     .run(proxy(MaxParams, (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v)))
                     .getOrThrow()
