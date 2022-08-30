@@ -20,13 +20,13 @@ object StreamModuleMock extends Mock[StreamModule] {
             ZIO.succeed {
               new StreamModule {
                 def sink(a: Int) =
-                  Unsafe.unsafeCompat { implicit u =>
+                  Unsafe.unsafe { implicit u =>
                     rts.unsafe
                       .run(proxy(Sink, a).catchAll(error => ZIO.succeed(ZSink.fail[String](error))))
                       .getOrThrowFiberFailure()
                   }
 
-                def stream(a: Int) = Unsafe.unsafeCompat { implicit u =>
+                def stream(a: Int) = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(Stream, a)).getOrThrowFiberFailure()
                 }
               }
