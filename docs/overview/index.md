@@ -16,5 +16,5 @@ Start by adding `zio-mock` as a dependency to your project:
     println(s"""```""")
 ```
 
-The documentation for zio-mock is currently available on [zio.dev](https://zio.dev/resources/ecosystem/officials/zio-mock).
+The documentation for zio-mock is currently available on [zio.dev](https://zio.dev/ecosystem/officials/zio-mock).
 
