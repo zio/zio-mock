@@ -108,7 +108,7 @@ object MockReporterSpec extends ZIOSpecDefault {
         )
       }
     },
-    test("should render `UnexpectedSatisfiedExpectaionException` correctly.") {
+    test("should render `UnexpectedSatisfiedExpectationException` correctly.") {
       verifyRendering(unsatisfiedExpectationSuite) { summary =>
         val output = summary.failureDetails
         assertTrue(
