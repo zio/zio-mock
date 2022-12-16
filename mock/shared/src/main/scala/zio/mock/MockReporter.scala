@@ -56,7 +56,6 @@ object MockReporter {
           e match {
             case MockException.UnexpectedCallException(capability, args)     =>
               val mock = capability.mock
-
               s"${reset("that there should have been no calls to the mock")} ${renderMock(mock)}.  However ${renderCapability(capability, Some(Right(args)))} was called unexpectedly."
             case MockException.UnsatisfiedExpectationsException(expectation) =>
               reset(renderExpectation(expectation))
@@ -68,7 +67,6 @@ object MockReporter {
       }
 
       private def makeTestFailure(messages: Seq[String]) = {
-
         val ass = Assertion.assertion[Any](
           messages.mkString(" " + prefix(ExpectationState.Unsatisfied))
         )(_ => false)
@@ -109,11 +107,12 @@ object MockReporter {
         val expectations = sorted.map(e => prefix(e.state) + render(e)).mkString(s"\n")
 
         s"""|${bold(blue("some or all"))} of the following expectations:
-        |${expectations}""".stripMargin
+            |${expectations}""".stripMargin
 
       }
 
-      private def renderAssertion(ass: Assertion[_]): String = bold(magenta(ass.toString()))
+      private def renderAssertion(assertion: Assertion[_]): String =
+        bold(magenta(assertion.render))
 
       private def renderMock(in: Mock[_]): String = {
         val fragments = in.getClass.getName.replaceAll("\\$", ".").split("\\.")
