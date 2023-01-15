@@ -142,15 +142,15 @@ lazy val docs = project
   .settings(macroDefinitionSettings)
   .settings(macroExpansionSettings)
   .settings(
-    scalaVersion      := Scala213,
-    moduleName        := "zio-mock-docs",
+    scalaVersion                               := Scala213,
+    moduleName                                 := "zio-mock-docs",
     scalacOptions -= "-Yno-imports",
     scalacOptions -= "-Xfatal-warnings",
-    projectName       := "ZIO Mock",
-    mainModuleName    := (mockJVM / moduleName).value,
-    projectStage      := ProjectStage.Development,
+    projectName                                := "ZIO Mock",
+    mainModuleName                             := (mockJVM / moduleName).value,
+    projectStage                               := ProjectStage.Development,
     ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(mockJVM),
-    docsPublishBranch := "master"
+    docsPublishBranch                          := "master"
   )
   .dependsOn(mockJVM)
   .enablePlugins(WebsitePlugin)
