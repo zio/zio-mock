@@ -49,7 +49,8 @@ lazy val root = (project in file("."))
     mockNative,
     mockTestsJVM,
     mockTestsJS,
-    examplesJVM
+    examplesJVM,
+    docs
   )
   .settings(
     crossScalaVersions := Nil,
@@ -141,19 +142,15 @@ lazy val docs = project
   .settings(macroDefinitionSettings)
   .settings(macroExpansionSettings)
   .settings(
-    scalaVersion      := Scala213,
-    publish / skip    := true,
-    moduleName        := "zio-mock-docs",
+    scalaVersion                               := Scala213,
+    moduleName                                 := "zio-mock-docs",
     scalacOptions -= "-Yno-imports",
     scalacOptions -= "-Xfatal-warnings",
-    projectName       := "ZIO Mock",
-    badgeInfo         := Some(
-      BadgeInfo(
-        artifact = "zio-mock_2.12",
-        projectStage = ProjectStage.Development
-      )
-    ),
-    docsPublishBranch := "master"
+    projectName                                := "ZIO Mock",
+    mainModuleName                             := (mockJVM / moduleName).value,
+    projectStage                               := ProjectStage.Development,
+    ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(mockJVM),
+    docsPublishBranch                          := "master"
   )
   .dependsOn(mockJVM)
   .enablePlugins(WebsitePlugin)
