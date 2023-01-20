@@ -28,12 +28,10 @@ package object testing {
     // sharedLayer: ZLayer[Any, Nothing, Environment with ExecutionEventSink] =
     //   ZLayer.succeedEnvironment(castedRuntime.environment)
 
-    val testOutput = if (showSpecOutput) TestOutput.live else ZLayer.succeed(SilentTestOutput)
+    val testOutput = if (showSpecOutput) TestRunner.defaultBootstrap else ZLayer.succeed(SilentTestOutput)
     val layer0     = testEnvironment ++ Scope.default ++ ZIOAppArgs.empty
     val layer1     = TestLogger.fromConsole(
       Console.ConsoleLive
-    ) >>> ExecutionEventPrinter.live(
-      ReporterEventRenderer.ConsoleEventRenderer
     ) >>> testOutput >>> ExecutionEventSink.live
 
     // perTestLayer = (ZLayer.succeedEnvironment(environment1) ++ ZEnv.live) >>> (TestEnvironment.live ++ ZLayer
@@ -47,7 +45,7 @@ package object testing {
         layer1,
         _ => ZIO.unit
       )
-      .run(spec, ExecutionStrategy.Sequential)
+      .run("fqn", spec, ExecutionStrategy.Sequential)
   }
 
 }

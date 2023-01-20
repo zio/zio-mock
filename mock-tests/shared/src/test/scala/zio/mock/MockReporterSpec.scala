@@ -3,6 +3,7 @@ package zio.mock
 import zio.test._
 import zio._
 import testing._
+
 import java.time.Instant
 import zio.mock.module._
 
@@ -103,7 +104,7 @@ object MockReporterSpec extends ZIOSpecDefault {
             "Your test case"
           ),
           output.contains(
-            "that there should have been no calls to the mock zio.mock.MockConsole.  However zio.mock.MockConsole.Print(foo) was called unexpectedly.()"
+            "that there should have been no calls to the mock zio.mock.MockConsole.  However zio.mock.MockConsole.Print(foo) was called unexpectedly."
           )
         )
       }
@@ -124,7 +125,7 @@ object MockReporterSpec extends ZIOSpecDefault {
             "⚠ Expected the call zio.mock.MockConsole.Print(equalTo(foo)) on zio.mock.MockConsole which satisfies the assertion equalTo(foo).  It should have been called exactly 2 times but was only called once.  As such, it is considered partially satisfied."
           ),
           output.contains(
-            "✖ Expected the call zio.mock.MockClock.Instant(isUnit()) on zio.mock.MockClock which satisfies the assertion isUnit().  However, it was never called and is considered unsatisfied."
+            "✖ Expected the call zio.mock.MockClock.Instant(isUnit) on zio.mock.MockClock which satisfies the assertion isUnit.  However, it was never called and is considered unsatisfied."
           ),
           output.contains(
             "✖ Expected the call zio.mock.MockConsole.PrintLine(equalTo(bar)) on zio.mock.MockConsole which satisfies the assertion equalTo(bar).  It should have been called anywhere from 2 to 5 time but was never called.  As such, it is considered unsatisfied."
@@ -145,7 +146,7 @@ object MockReporterSpec extends ZIOSpecDefault {
       }
 
     }
-  ) @@ ignore // TODO: reenable this test suite
+  )
   val expectation   =
     MockConsole.Print(Assertion.equalTo("foo"), unit).twice ++ MockClock.Instant(
       value(Instant.ofEpochMilli(0))

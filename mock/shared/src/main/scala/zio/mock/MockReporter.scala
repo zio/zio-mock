@@ -113,7 +113,7 @@ object MockReporter {
 
       }
 
-      private def renderAssertion(ass: Assertion[_]): String = bold(magenta(ass.toString()))
+      private def renderAssertion(ass: Assertion[_]): String = bold(magenta(ass.render))
 
       private def renderMock(in: Mock[_]): String = {
         val fragments = in.getClass.getName.replaceAll("\\$", ".").split("\\.")
