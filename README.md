@@ -78,7 +78,7 @@ A pure function is such a function which operates only on its inputs and produce
 
 The signature of `register` method `(String, Int, String) => IO[String, Unit]` hints us we're dealing with a command. It returns `Unit` (well, wrapped in the `IO`, but it does not matter here). We can't do anything useful with `Unit`, and it does not contain any information. It is the equivalent of returning nothing.
 
-It is also an unreliable return type, as when Scala expects the return type to be `Unit` it will discard whatever value it had (for details see [Section 6.26.1][link-sls-6.26.1] of the Scala Language Specification), which may shadow the fact that the final value produced (and discarded) was not the one we expected.
+It is also an unreliable return type, as when Scala expects the return type to be `Unit` it will discard whatever value it had (for details see [Section 6.26.1](https://www.scala-lang.org/files/archive/spec/2.11/06-expressions.html#value-conversions) of the Scala Language Specification), which may shadow the fact that the final value produced (and discarded) was not the one we expected.
 
 Inside the `IO` there may be a description of any side effects. It may open a file, print to the console, or connect to databases. **So the problem is "How is it possible to test a service along with its collaborators"?**
 
