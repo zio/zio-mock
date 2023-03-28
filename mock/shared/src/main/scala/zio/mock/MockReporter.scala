@@ -242,6 +242,7 @@ object MockReporter {
       private def simpleNameRedWithEmphasis(name: String): String =
         name.split('.').reverse.toList match {
           case head :: tail => s"${bold(cyan(tail.reverse.mkString(".") + "."))}${underlined(bold(red(head)))}"
+          case Nil          => s"${underlined(bold(red(name)))}"
         }
     }
 
