@@ -3,7 +3,7 @@ package zio.mock
 import zio._
 import zio.mock.module.T22
 import zio.test.{Assertion, Live, Spec, assertZIO, test}
-import testing._
+import zio.test.MockUtils._
 
 trait MockSpecUtils[R] {
 
