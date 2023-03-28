@@ -12,7 +12,6 @@ object ComposedEmptyMockSpec extends ZIOBaseSpec {
   import Assertion._
   import Expectation._
   import MockException._
-  import testing._
 
   def branchingProgram(predicate: Boolean): ZIO[Any, IOException, Unit] =
     ZIO

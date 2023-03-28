@@ -4,7 +4,6 @@ import zio.test._
 import zio.test.MockUtils._
 import zio._
 import zio.mock.module._
-import zio.mock.testing._
 import java.time.Instant
 
 object MockReporterSpec extends ZIOSpecDefault {
