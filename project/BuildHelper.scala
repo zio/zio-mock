@@ -285,7 +285,10 @@ object BuildHelper {
     libraryDependencies += "io.github.cquiroz" %%% "scala-java-time"      % SjsJavaTimeVersion,
     libraryDependencies += "io.github.cquiroz" %%% "scala-java-time-tzdb" % SjsJavaTimeVersion,
     libraryDependencies += ("org.scala-js" %%% "scalajs-java-securerandom" % "1.0.0").cross(CrossVersion.for3Use2_13),
-    scalacOptions += "-scalajs"
+    scalacOptions ++= {
+      if (scalaVersion.value == Scala3) Seq("-scalajs")
+      else Seq()
+    }
   )
 
   def nativeSettings = Seq(
