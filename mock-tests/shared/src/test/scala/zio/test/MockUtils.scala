@@ -1,9 +1,10 @@
-package zio.mock
+package zio.test
 
 import zio._
-import zio.test._
+import zio.mock.testing._
+import zio.test.results._
 
-package object testing {
+object MockUtils {
 
   private def defaultAbsorber[E]: E => Throwable = {
     case e: Throwable => e
@@ -32,9 +33,9 @@ package object testing {
     val layer0     = testEnvironment ++ Scope.default ++ ZIOAppArgs.empty
     val layer1     = TestLogger.fromConsole(
       Console.ConsoleLive
-    ) >>> ExecutionEventPrinter.live(
+    ) >+> ExecutionEventConsolePrinter.live(
       ReporterEventRenderer.ConsoleEventRenderer
-    ) >>> testOutput >>> ExecutionEventSink.live
+    ) >+> ResultFileOpsJson.live >+> ResultSerializer.live >+> ExecutionEventJsonPrinter.live >+> ExecutionEventPrinter.live >+> testOutput >+> ExecutionEventSink.live
 
     // perTestLayer = (ZLayer.succeedEnvironment(environment1) ++ ZEnv.live) >>> (TestEnvironment.live ++ ZLayer
     //                  .environment[Scope] ++ ZLayer.environment[ZIOAppArgs])
@@ -47,7 +48,6 @@ package object testing {
         layer1,
         _ => ZIO.unit
       )
-      .run(spec, ExecutionStrategy.Sequential)
+      .run("", spec, ExecutionStrategy.Sequential)
   }
-
 }

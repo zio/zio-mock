@@ -22,9 +22,9 @@ object BuildHelper {
   }
   val Scala212: String                      = versions("2.12")
   val Scala213: String                      = versions("2.13")
-  val Scala3: String                        = versions("3.1")
+  val Scala3: String                        = versions("3.2")
 
-  val SilencerVersion    = "1.7.8"
+  val SilencerVersion    = "1.7.12"
   val SjsJavaTimeVersion = "2.3.0"
 
   private val stdOptions = Seq(
@@ -284,7 +284,11 @@ object BuildHelper {
   def jsSettings = Seq(
     libraryDependencies += "io.github.cquiroz" %%% "scala-java-time"      % SjsJavaTimeVersion,
     libraryDependencies += "io.github.cquiroz" %%% "scala-java-time-tzdb" % SjsJavaTimeVersion,
-    libraryDependencies += ("org.scala-js" %%% "scalajs-java-securerandom" % "1.0.0").cross(CrossVersion.for3Use2_13)
+    libraryDependencies += ("org.scala-js" %%% "scalajs-java-securerandom" % "1.0.0").cross(CrossVersion.for3Use2_13),
+    scalacOptions ++= {
+      if (scalaVersion.value == Scala3) Seq("-scalajs")
+      else Seq()
+    }
   )
 
   def nativeSettings = Seq(

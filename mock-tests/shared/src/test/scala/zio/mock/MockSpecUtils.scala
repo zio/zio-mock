@@ -3,7 +3,7 @@ package zio.mock
 import zio._
 import zio.mock.module.T22
 import zio.test.{Assertion, Live, Spec, assertZIO, test}
-import testing._
+import zio.test.MockUtils._
 
 trait MockSpecUtils[R] {
 
@@ -33,13 +33,11 @@ trait MockSpecUtils[R] {
       app: ZIO[R, E, A],
       check: Assertion[Option[A]]
   )(implicit trace: Trace): Spec[Live, E] = test(name) {
-    val result =
+    val t1: ZIO[Scope, E, A] = mock.build.flatMap(app.provideEnvironment(_))
+    val t2: ZIO[Any, E, A]   = ZIO.scoped(t1)
+    val result               =
       Live.live {
-        ZIO
-          .scoped {
-            mock.build.flatMap(app.provideEnvironment(_))
-          }
-          .timeout(duration)
+        t2.timeout(duration)
       }
 
     assertZIO(result)(check)

@@ -1,18 +1,17 @@
 package zio.mock
 
 import zio.mock.internal.MockException
-import zio.test.Assertion
+import zio.test._
+import zio.test.MockUtils._
 import zio.{Clock, Console, ZIO}
 
 import java.io.IOException
-import zio.test._
 
 object ComposedEmptyMockSpec extends ZIOBaseSpec {
 
   import Assertion._
   import Expectation._
   import MockException._
-  import testing._
 
   def branchingProgram(predicate: Boolean): ZIO[Any, IOException, Unit] =
     ZIO

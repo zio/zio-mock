@@ -1,7 +1,7 @@
 package zio.mock.module
 
 import zio.mock.{Mock, Proxy}
-import zio.stream.ZSink
+import zio.stream.{ZSink, ZStream}
 import zio.{URLayer, Unsafe, ZIO, ZLayer}
 
 /** Example module used for testing ZIO Mock framework.
@@ -21,13 +21,15 @@ object StreamModuleMock extends Mock[StreamModule] {
               new StreamModule {
                 def sink(a: Int) =
                   Unsafe.unsafe { implicit u =>
+                    val t1: ZIO[Any, String, ZSink[Any, String, Int, Nothing, List[Int]]] = proxy(Sink, a)
                     rts.unsafe
-                      .run(proxy(Sink, a).catchAll(error => ZIO.succeed(ZSink.fail[String](error))))
+                      .run(t1.catchAll(error => ZIO.succeed(ZSink.fail[String](error))))
                       .getOrThrowFiberFailure()
                   }
 
                 def stream(a: Int) = Unsafe.unsafe { implicit u =>
-                  rts.unsafe.run(proxy(Stream, a)).getOrThrowFiberFailure()
+                  val t1: ZIO[Any, Nothing, ZStream[Any, String, Int]] = proxy(Stream, a)
+                  rts.unsafe.run(t1).getOrThrowFiberFailure()
                 }
               }
             }

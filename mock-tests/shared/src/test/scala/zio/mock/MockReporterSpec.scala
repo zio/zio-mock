@@ -1,10 +1,10 @@
 package zio.mock
 
 import zio.test._
+import zio.test.MockUtils._
 import zio._
-import testing._
-import java.time.Instant
 import zio.mock.module._
+import java.time.Instant
 
 object MockReporterSpec extends ZIOSpecDefault {
   import Expectation._

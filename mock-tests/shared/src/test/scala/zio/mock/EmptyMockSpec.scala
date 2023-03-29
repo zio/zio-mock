@@ -2,11 +2,10 @@ package zio.mock
 
 import zio._
 import zio.mock.internal.MockException
-import zio.test.Assertion
+import zio.test._
+import zio.test.MockUtils._
 
 import java.io.IOException
-import zio.test._
-import testing._
 
 object EmptyMockSpec extends MockSpecDefault {
 

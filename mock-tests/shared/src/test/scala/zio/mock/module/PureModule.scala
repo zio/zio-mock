@@ -1,5 +1,6 @@
 package zio.mock.module
 
+import com.github.ghik.silencer.silent
 import zio.{IO, EnvironmentTag, URIO, ZIO}
 
 import scala.reflect.ClassTag
@@ -57,6 +58,7 @@ trait PureModule {
   ): IO[String, String]
 }
 
+@silent("never used")
 object PureModule {
 
   // Workaround for izumi.reflect.EnvironmentTag any-kindness (probably?)  causing `Any` to be inferred on dotty
