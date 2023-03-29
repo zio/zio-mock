@@ -7,7 +7,7 @@ const sidebars = {
       link: { type: "doc", id: "index" },
       items: [
         "mock",
-        "expectation"
+        "expectation"  
       ]
     }
   ]

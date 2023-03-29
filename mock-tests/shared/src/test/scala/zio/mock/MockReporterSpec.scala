@@ -58,7 +58,7 @@ object MockReporterSpec extends ZIOSpecDefault {
       }
     },
     test("should render `InvalidCall.InvalidCapability` correctly.") {
-      verifyRendering(invalidCapabiltySuite) { summary =>
+      verifyRendering(invalidCapabilitySuite) { summary =>
         val output = summary.failureDetails
         assertTrue(
           summary.fail == 1,
@@ -108,7 +108,7 @@ object MockReporterSpec extends ZIOSpecDefault {
         )
       }
     },
-    test("should render `UnexpectedSatisfiedExpectaionException` correctly.") {
+    test("should render `UnexpectedSatisfiedExpectationException` correctly.") {
       verifyRendering(unsatisfiedExpectationSuite) { summary =>
         val output = summary.failureDetails
         assertTrue(
@@ -157,7 +157,7 @@ object MockReporterSpec extends ZIOSpecDefault {
     } @@ TestAspects.withEnv(expectation.build)
   )
 
-  val invalidCapabiltySuite = suite("InvalidCapabilityException")(
+  val invalidCapabilitySuite = suite("InvalidCapabilityException")(
     test("render invalid capability") {
       ZIO
         .when(true)(Console.print("foo") *> Console.printLine("bar") *> Console.printLine("bar"))
@@ -190,7 +190,7 @@ object MockReporterSpec extends ZIOSpecDefault {
       val testCase = suite("Show failures with formatting")(
         andSuite,
         invalidCallSuite,
-        invalidCapabiltySuite,
+        invalidCapabilitySuite,
         polySuite,
         unexpectedCallSuite,
         unsatisfiedExpectationSuite

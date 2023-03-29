@@ -4,7 +4,7 @@ import MimaSettings.mimaSettings
 inThisBuild(
   List(
     organization  := "dev.zio",
-    homepage      := Some(url("https://zio.github.io/zio-mock/")),
+    homepage      := Some(url("https://zio.dev/zio-mock/")),
     licenses      := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
     developers    := List(
       Developer(
@@ -143,15 +143,14 @@ lazy val docs = project
   .settings(macroExpansionSettings)
   .settings(
     scalaVersion                               := Scala213,
-    publish / skip                             := true,
     moduleName                                 := "zio-mock-docs",
     scalacOptions -= "-Yno-imports",
     scalacOptions -= "-Xfatal-warnings",
+    projectName                                := "ZIO Mock",
+    mainModuleName                             := (mockJVM / moduleName).value,
+    projectStage                               := ProjectStage.Development,
     ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(mockJVM),
-    ScalaUnidoc / unidoc / target              := (LocalRootProject / baseDirectory).value / "website" / "static" / "api",
-    cleanFiles += (ScalaUnidoc / unidoc / target).value,
-    docusaurusCreateSite                       := docusaurusCreateSite.dependsOn(Compile / unidoc).value,
-    docusaurusPublishGhpages                   := docusaurusPublishGhpages.dependsOn(Compile / unidoc).value
+    docsPublishBranch                          := "master"
   )
   .dependsOn(mockJVM)
-  .enablePlugins(MdocPlugin, DocusaurusPlugin, ScalaUnidocPlugin)
+  .enablePlugins(WebsitePlugin)

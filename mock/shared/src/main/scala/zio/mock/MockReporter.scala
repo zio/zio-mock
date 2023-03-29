@@ -234,7 +234,7 @@ object MockReporter {
 
       private def renderState(state: ExpectationState) = bold(state match {
         case PartiallySatisfied => yellow("partially satisfied")
-        case Satisfied          => green("statisfied")
+        case Satisfied          => green("satisfied")
         case Saturated          => green("saturated")
         case Unsatisfied        => red("unsatisfied")
       })
