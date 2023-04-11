@@ -259,8 +259,7 @@ private[mock] object MockableMacro {
             wrapInUnsafe(q"rts.unsafe.run(proxy($tag, ..$paramNames)).getOrThrowFiberFailure()")
         }
 
-      val noParams = info.symbol.paramLists.isEmpty // Scala 2.11 workaround. For some reason isVal == false in 2.11
-      if (info.symbol.isVal || (noParams && TestVersion.isScala211)) q"$mods val $name: $returnType = $returnValue"
+      if (info.symbol.isVal) q"$mods val $name: $returnType = $returnValue"
       else {
         info.symbol.paramLists.map(_.map { ts =>
           val name = ts.asTerm.name

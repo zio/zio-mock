@@ -11,7 +11,7 @@
 In order to use this library, we need to add the following line in our `build.sbt` file:
 
 ```scala
-libraryDependencies += "dev.zio" %% "zio-mock" % "1.0.0-RC9"
+libraryDependencies += "dev.zio" %% "zio-mock" % "1.0.0-RC10"
 ```
 
 ## The Problem
