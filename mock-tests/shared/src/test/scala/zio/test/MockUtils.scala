@@ -2,7 +2,6 @@ package zio.test
 
 import zio._
 import zio.mock.testing._
-import zio.test.results._
 
 object MockUtils {
 
