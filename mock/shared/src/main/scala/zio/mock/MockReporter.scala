@@ -68,7 +68,6 @@ object MockReporter {
       }
 
       private def makeTestFailure(messages: Seq[String]) = {
-
         val ass = Assertion.assertion[Any](
           messages.mkString(" " + prefix(ExpectationState.Unsatisfied))
         )(_ => false)
@@ -113,7 +112,7 @@ object MockReporter {
 
       }
 
-      private def renderAssertion(ass: Assertion[_]): String = bold(magenta(ass.toString()))
+      private def renderAssertion(ass: Assertion[_]): String = bold(magenta(ass.render))
 
       private def renderMock(in: Mock[_]): String = {
         val fragments = in.getClass.getName.replaceAll("\\$", ".").split("\\.")
