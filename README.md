@@ -4,7 +4,7 @@
 
 # ZIO Mock
 
-![Development](https://img.shields.io/badge/Project%20Stage-Development-green.svg)](https://github.com/zio/zio/wiki/Project-Stages) ![CI Badge](https://github.com/zio/zio-mock/workflows/CI/badge.svg) [![Sonatype Releases](https://img.shields.io/nexus/r/https/oss.sonatype.org/dev.zio/zio-mock_2.13.svg?label=Sonatype%20Release)](https://oss.sonatype.org/content/repositories/releases/dev/zio/zio-mock_2.13/) [![Sonatype Snapshots](https://img.shields.io/nexus/s/https/oss.sonatype.org/dev.zio/zio-mock_2.13.svg?label=Sonatype%20Snapshot)](https://oss.sonatype.org/content/repositories/snapshots/dev/zio/zio-mock_2.13/) [![javadoc](https://javadoc.io/badge2/dev.zio/zio-mock-docs_2.13/javadoc.svg)](https://javadoc.io/doc/dev.zio/zio-mock-docs_2.13) [![ZIO Mock](https://img.shields.io/github/stars/zio/zio-mock?style=social)](https://github.com/zio/zio-mock)
+[![Development](https://img.shields.io/badge/Project%20Stage-Development-green.svg)](https://github.com/zio/zio/wiki/Project-Stages) ![CI Badge](https://github.com/zio/zio-mock/workflows/CI/badge.svg) [![Sonatype Releases](https://img.shields.io/nexus/r/https/oss.sonatype.org/dev.zio/zio-mock_2.13.svg?label=Sonatype%20Release)](https://oss.sonatype.org/content/repositories/releases/dev/zio/zio-mock_2.13/) [![Sonatype Snapshots](https://img.shields.io/nexus/s/https/oss.sonatype.org/dev.zio/zio-mock_2.13.svg?label=Sonatype%20Snapshot)](https://oss.sonatype.org/content/repositories/snapshots/dev/zio/zio-mock_2.13/) [![javadoc](https://javadoc.io/badge2/dev.zio/zio-mock-docs_2.13/javadoc.svg)](https://javadoc.io/doc/dev.zio/zio-mock-docs_2.13) [![ZIO Mock](https://img.shields.io/github/stars/zio/zio-mock?style=social)](https://github.com/zio/zio-mock)
 
 ## Installation
 
