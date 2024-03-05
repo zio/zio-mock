@@ -18,7 +18,7 @@ package zio.mock
 
 import zio.mock.Expectation.{And, Chain, Exactly, Or, Repeated}
 import zio.mock.Result.{Fail, Succeed}
-import zio.mock.internal.{ExpectationState, MockException, MockState, ProxyFactory}
+import zio.mock.internal.{ExpectationState, MockState, ProxyFactory}
 import zio.stacktracer.TracingImplicits.disableAutoTrace
 import zio.test.Assertion
 import zio.{EnvironmentTag, IO, Trace, ULayer, URLayer, ZIO, ZLayer}

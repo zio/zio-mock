@@ -21,6 +21,7 @@ import zio.test.Assertion
 import zio.{=!=, EnvironmentTag, IO, LightTypeTag, ZIO, taggedIsSubtype, taggedTagType}
 
 import java.util.UUID
+import scala.annotation.nowarn
 
 /** A `Capability[R, I, E, A]` represents a capability of environment `R` that takes an input `I` and returns an effect
   * that may fail with an error `E` or produce a single `A`.
@@ -84,6 +85,7 @@ object Capability {
 
   sealed abstract class Unknown
 
+  @nowarn("msg=evidence parameter.*is never used")
   protected[mock] abstract class Poly[R: EnvironmentTag, I, E, A] extends Base[R]
 
   object Poly {

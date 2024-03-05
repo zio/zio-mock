@@ -123,12 +123,11 @@ object MockReporter {
         }))
       }
 
-      private def renderCall(call: Expectation.Call[_, _, _, _], additionalDetails: Option[String] = None): String = {
+      private def renderCall(call: Expectation.Call[_, _, _, _], additionalDetails: Option[String]): String = {
         val capability  = call.capability
         val assertion   = call.assertion
         val mock        = call.mock
         val state       = call.state
-        val invocations = call.invocations
         val details     = additionalDetails.getOrElse(
           s"However, it was ${bold(red("never"))} called and is considered ${renderState(state)}."
         )

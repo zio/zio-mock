@@ -20,8 +20,11 @@ import zio.stream.{ZSink, ZStream}
 import zio.test.TestPlatform
 import zio.{EnvironmentTag, Runtime, RuntimeFlag, RuntimeFlags, Trace, UIO, ULayer, URLayer, ZIO}
 
+import scala.annotation.nowarn
+
 /** A `Mock[R]` represents a mockable environment `R`.
   */
+@nowarn("msg=evidence parameter.*is never used")
 abstract class Mock[R: EnvironmentTag] { self =>
 
   protected[mock] val compose: URLayer[Proxy, R]

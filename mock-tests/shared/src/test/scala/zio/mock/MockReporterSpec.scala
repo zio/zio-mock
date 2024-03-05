@@ -195,7 +195,7 @@ object MockReporterSpec extends ZIOSpecDefault {
         unsatisfiedExpectationSuite
       ) @@ MockReporter()
 
-      executeSpec(testCase, true).as(assertTrue(true))
+      executeSpec(testCase, showSpecOutput = true).as(assertTrue(true))
     }
 
   def verifyRendering(

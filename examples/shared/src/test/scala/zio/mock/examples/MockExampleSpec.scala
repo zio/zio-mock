@@ -7,7 +7,9 @@ import zio.test.{Spec, ZIOSpecDefault, assertZIO}
 import zio.{Clock, Console, Random, ZIO}
 
 import java.io.IOException
+import scala.annotation.nowarn
 
+@nowarn("msg=ZLAYER WARNING")
 object MockExampleSpec extends ZIOSpecDefault {
 
   def spec: Spec[Any, IOException] = suite("suite with mocks")(
@@ -44,12 +46,12 @@ object MockExampleSpec extends ZIOSpecDefault {
         branchingProgram(p1) <*> branchingProgram(p2)
 
       val clockLayer      = (MockClock.NanoTime(value(42L)) andThen MockClock.NanoTime(value(42L))).toLayer
-      val noCallToConsole = composedBranchingProgram(false, false)
+      val noCallToConsole = composedBranchingProgram(p1 = false, p2 = false)
         .provide(MockConsole.empty ++ clockLayer)
 
       val consoleLayer  =
         (MockConsole.ReadLine(value("foo")) andThen MockConsole.ReadLine(value("foo"))).toLayer
-      val noCallToClock = composedBranchingProgram(true, true)
+      val noCallToClock = composedBranchingProgram(p1 = true, p2 = true)
         .provide(MockClock.empty ++ consoleLayer)
 
       assertZIO(noCallToConsole)(equalTo((42L, 42L))) *> assertZIO(noCallToClock)(equalTo(("foo", "foo")))
