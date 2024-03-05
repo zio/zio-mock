@@ -24,7 +24,7 @@ object BuildHelper {
   val Scala213: String                      = versions("2.13")
   val Scala3: String                        = versions("3.3")
 
-  val SilencerVersion    = "1.7.12"
+  val SilencerVersion    = "1.7.16"
   val SjsJavaTimeVersion = "2.3.0"
 
   private val stdOptions = Seq(
