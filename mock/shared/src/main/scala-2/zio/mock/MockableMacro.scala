@@ -16,8 +16,7 @@
 
 package zio.mock
 
-import com.github.ghik.silencer.silent
-import zio.test.TestVersion
+import scala.annotation.nowarn
 
 import scala.reflect.macros.whitebox.Context
 
@@ -25,7 +24,7 @@ import scala.reflect.macros.whitebox.Context
   */
 private[mock] object MockableMacro {
 
-  @silent
+  @nowarn
   def impl(c: Context)(annottees: c.Tree*): c.Expr[c.Tree] = {
     import c.universe._
 
@@ -337,7 +336,7 @@ private[mock] object MockableMacro {
               }
             }
             )
-            
+
           ..$body
         }
       """
