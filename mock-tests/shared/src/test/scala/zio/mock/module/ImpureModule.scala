@@ -1,7 +1,8 @@
 package zio.mock.module
 
-import com.github.ghik.silencer.silent
 import zio.{EnvironmentTag, URIO, ZIO}
+
+import scala.annotation.nowarn
 
 /** Example of impure module used for testing ZIO Mock framework.
   */
@@ -11,7 +12,7 @@ trait ImpureModule {
   def singleParam(a: Int): String
   def manyParams(a: Int, b: String, c: Long): String
   def manyParamLists(a: Int)(b: String)(c: Long): String
-  @silent("side-effecting nullary methods")
+  @nowarn("msg=side-effecting nullary methods")
   def command: Unit
   def parameterizedCommand(a: Int): Unit
   def overloaded(n: Int): String

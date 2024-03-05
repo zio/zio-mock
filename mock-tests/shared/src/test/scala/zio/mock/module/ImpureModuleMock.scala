@@ -1,8 +1,9 @@
 package zio.mock.module
 
-import com.github.ghik.silencer.silent
 import zio.mock.{Mock, Proxy}
 import zio.{EnvironmentTag, URLayer, Unsafe, ZIO, ZLayer}
+
+import scala.annotation.nowarn
 
 /** Example module used for testing ZIO Mock framework.
   */
@@ -64,7 +65,7 @@ object ImpureModuleMock extends Mock[ImpureModule] {
                     rts.unsafe.run(proxy(ManyParamLists, a, b, c)).getOrThrow()
                   }
 
-                @silent("side-effecting nullary methods")
+                @nowarn("msg=side-effecting nullary methods")
                 def command: Unit = Unsafe.unsafe { implicit u =>
                   rts.unsafe.run(proxy(Command)).getOrThrow()
                 }
