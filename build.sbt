@@ -78,7 +78,7 @@ lazy val mock = crossProject(JSPlatform, JVMPlatform, NativePlatform)
       if (scalaVersion.value == Scala3)
         Seq.empty
       else
-        Seq("-Wconf:msg=zio.stacktracer.TracingImplicits.disableAutoTrace")
+        Seq("-Wconf:cat=unused&origin=zio.stacktracer.TracingImplicits.disableAutoTrace:s")
     }
   )
   .enablePlugins(BuildInfoPlugin)
