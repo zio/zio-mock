@@ -329,6 +329,7 @@ private[mock] object MockableMacro {
             _root_.zio.ZLayer.fromZIO(
             _root_.zio.ZIO.service[_root_.zio.mock.Proxy].flatMap { proxy =>
               withRuntime[_root_.zio.mock.Proxy, $service] { rts =>
+                rts.toString() // workaround to avoid 'parameter rts in anonymous function is never used' warnings
                 class $serviceClassName extends $service {
                   ..$mocks
                 }
